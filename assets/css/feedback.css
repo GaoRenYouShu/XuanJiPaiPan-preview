@@ -8,7 +8,12 @@
    语言：零圆角、零投影、零渐变，容器一律上下细线（纸本目录）。
    宽度登记：问题描述框属整行族（占满行宽，宽度上限由所在容器给出，min-width:0）；
    模块、位置与联系方式三项属定宽族，取 137px（最长约十六字符的邮箱与帐号）。
-   描述框与全站控件同高 30px（控件高度只此一档），多行内容在框内滚动。 */
+   控件高度只此一档 30px，那是单行框的档；问题描述框是唯一的多行框，与全站多行文本区
+   同为高由行数定的一类，故按行高与内距取终值，不套 30px：
+   四行正文 4×1.6×13px＝83.2px，加上下内距各 6px 与上下描边各 1px 共 97.2px，
+   取 98px 为终值（rows=4 与之同高，二者只写一处，见下）。
+   四行是_description 的中位长度：一句现象加两三步复现正占四行，再长在框内滚动，
+   不占页面的过多竖向空间。 */
 
 .page-fb{
   --fb:#507237;          /* 竹青主色 */
@@ -59,16 +64,41 @@
 
 .page-fb .fb-desc{flex:1 1 100%;min-width:0}
 
-.page-fb .fb-desc textarea{min-width:0;height:30px;padding:var(--sp-1) var(--sp-3);border:1px solid var(--fb-line);border-radius:0;background:var(--card);color:var(--fb-deep);font-family:var(--font);font-size:13px;line-height:1.35}
+.page-fb .fb-desc textarea{min-width:0;height:98px;padding:var(--sp-1) var(--sp-3);border:1px solid var(--fb-line);border-radius:0;background:var(--card);color:var(--fb-deep);font-family:var(--font);font-size:13px;line-height:1.6;resize:vertical}
 
 .page-fb .fb-desc textarea:focus{border-color:var(--fb);outline:none}
 
 .page-fb .fb-row-label{font-size:13px;color:var(--fb2)}
 
-/* 按钮两档：页面兜底一条管住全页按钮，悬停转深档 */
+/* 按钮两档：页面兜底一条管住全页按钮，悬停转深档；次档为纸淡底描边，不抢主按钮 */
 .page-fb .btn{background:var(--fb);border-color:var(--fb);color:#fff;box-shadow:none}
 
 .page-fb .btn:hover{background:var(--fb2);border-color:var(--fb2);color:#fff;box-shadow:none}
+
+.page-fb .btn.soft{background:var(--fb-tint);border-color:var(--fb-line);color:var(--fb-deep)}
+
+.page-fb .btn.soft:hover{background:var(--card);border-color:var(--fb);color:var(--fb-deep)}
+
+/* 留言区：一条一卡，上下细线夹出，不画框不投影；题头一行列标签、时间与删除 */
+.page-fb .fb-list{margin-top:var(--sp-3)}
+
+.page-fb .fb-item{padding:var(--sp-3) 0;border-bottom:1px solid var(--fb-line)}
+
+.page-fb .fb-item:first-child{border-top:1px solid var(--fb-line)}
+
+.page-fb .fb-item-h{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2)}
+
+.page-fb .fb-tag{font-size:11px;line-height:1.7;color:var(--fb2);background:var(--fb-tint);border:1px solid var(--fb-line);padding:0 var(--sp-2)}
+
+.page-fb .fb-item-t{font-size:11px;color:var(--fb-ink2);margin-right:auto}
+
+.page-fb .fb-item-b{margin-top:var(--sp-2);display:block;font-size:13px;line-height:1.8;color:var(--fb-ink);text-decoration:none;word-break:break-word}
+
+.page-fb .fb-item-b:hover{color:var(--fb2);text-decoration:underline}
+
+.page-fb .fb-item-c{margin-top:var(--sp-1);font-size:12px;line-height:1.7;color:var(--fb-ink2)}
+
+.page-fb .fb-list-acts{margin-top:var(--sp-3)}
 
 /* 复制状态字与生成文本块：文本块上下细线夹出，保留换行，可手动选中 */
 .page-fb .fb-status{font-size:12px;color:var(--fb-ink2);line-height:1.7}
@@ -78,7 +108,8 @@
 .page-fb .sub-note{color:var(--fb-ink2)}
 
 @media print{
-  .page-fb .page h1,.page-fb .mod-title,.page-fb .fb-out{color:#1c1c1c !important}
+  .page-fb .page h1,.page-fb .mod-title,.page-fb .fb-out,.page-fb .fb-item-b{color:#1c1c1c !important}
+  .page-fb .fb-list-acts{display:none !important}
   .page-fb .page h1::before,.page-fb .page h1::after{background:#cfcfcf !important}
   .page-fb .mod-head,.page-fb .fb-out{border-color:#cfcfcf !important}
 }
