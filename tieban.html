@@ -243,6 +243,9 @@ function readOpts(){
     dst: readDstMode(), yearAxis: readYearAxis(), qiYunSect: readQiYunSect()
   };
 }
+/* 太阳时已开而未定出生地：校正是按经度算的，没有经度就无从校正，拦在起盘之前；
+   提示语同八字页 SUN_NO_PLACE_MSG 口径。 */
+const TB_NO_PLACE_MSG='太阳时校正已开，但未定出生地：请在出生地组选择省份与城市，或手动填写经度；若出生地无考，把太阳时改为不校正，按钟面标准时出盘。';
 /* ============ 状态 ============ */
 let LAST = null;
 let TB_PLACE = null;
@@ -650,6 +653,9 @@ function query(){
     const parts = v.split('-').map(Number);
     const y = parts[0], m = parts[1], d = parts[2];
     if(!y || !m || !d){ document.getElementById('out').innerHTML='<p class="notice">日期格式不正确，请重新选择。</p>'; return; }
+    /* 太阳时开而未定出生地即拦在起盘之前（与八字、合婚、紫微三页同口径）：没有经度就无从校正，
+       免下拉标着真太阳时而出的是钟面时。 */
+    if(readSunMode()!=='off' && resolveLng()==null){ document.getElementById('out').innerHTML='<p class="notice">'+TB_NO_PLACE_MSG+'</p>'; return; }
     const zhiH = parseInt(document.getElementById('hInput').value,10);
     const keIn = parseInt(document.getElementById('kInput').value,10);
     const sex = document.getElementById('sexInput').value;
