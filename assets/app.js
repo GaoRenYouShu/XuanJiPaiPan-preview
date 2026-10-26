@@ -1225,3 +1225,8 @@ window.xjShuffle = xjShuffle;
   else run();
   window.addEventListener('resize', function(){ clearTimeout(timer); timer = setTimeout(run, 150); });
 })();
+
+/* 顶栏与页脚随 app.js 末段渲染，不等各页专用脚本；活动页按当前路径判定。 */
+if (typeof document !== 'undefined' && document.getElementById && document.getElementById('topbar') && typeof location !== 'undefined') {
+  renderChrome(location.pathname.split('/').pop() || 'index.html');
+}
