@@ -22,112 +22,24 @@
   } catch (e) { /* 挂载失败静默 */ }
 })();
 
-/* 分组导航：首页 + 历法、命理、三式、占卜、民俗、运气、相术、附录（八卷谱系） */
-const NAV_GROUPS = [
-  {type:'link', href:'index.html', name:'首页'},
-  {type:'group', name:'历法', items:[
-    {href:'wannianli.html', name:'万年历'},
-    {href:'laohuangli.html', name:'老黄历'},
-    {href:'foli.html', name:'佛历'},
-    {href:'daoli.html', name:'道历'},
-    {href:'zangli.html', name:'藏历'},
-    {href:'zeri.html', name:'择日'},
-    {href:'huangji.html', name:'皇极经世'},
-  ]},
-  {type:'group', name:'命理', items:[
-    {href:'bazi.html', name:'八字排盘'},
-    {href:'hehun.html', name:'八字合婚'},
-    {href:'ziwei.html', name:'紫微斗数'},
-    {href:'heluo.html', name:'河洛理数'},
-    {href:'tieban.html', name:'铁板神数'},
-    {href:'xingming.html', name:'姓名学'},
-    {href:'xingzhan.html', name:'占星术'},
-    {href:'qizheng.html', name:'七政四余'},
-  ]},
-  {type:'group', name:'三式', items:[
-    {href:'qimen.html', name:'奇门遁甲'},
-    {href:'daliuren.html', name:'大六壬'},
-    {href:'taiyi.html', name:'太乙神数'},
-  ]},
-  {type:'group', name:'占卜', items:[
-    {href:'liuyao.html', name:'六爻'},
-    {href:'meihua.html', name:'梅花易数'},
-    {href:'xiaoliuren.html', name:'小六壬'},
-    {href:'lingqian.html', name:'灵签'},
-    {href:'tarot.html', name:'塔罗牌'},
-    {href:'lenormand.html', name:'雷诺曼'},
-  ]},
-  {type:'group', name:'民俗', items:[
-    {href:'minsu.html', name:'民俗占法'},
-    {href:'cezi.html', name:'测字'},
-    {href:'zhougong.html', name:'周公解梦'},
-    {href:'xingxiu.html', name:'二十八宿'},
-    {href:'taisui.html', name:'太岁生肖'},
-  ]},
-  {type:'group', name:'运气', items:[
-    {href:'yunqi.html', name:'五运六气'},
-  ]},
-  {type:'group', name:'相术', items:[
-    {href:'shouxiang.html', name:'手相'},
-    {href:'mianxiang.html', name:'面相'},
-    {href:'fengshui.html', name:'阳宅风水'},
-    {href:'fengshui-yin.html', name:'阴宅风水'},
-    {href:'luopan.html', name:'罗经仪'},
-  ]},
-  {type:'group', name:'附录', items:[
-    {href:'dianji.html', name:'典籍参考'},
-    {href:'shuoming.html', name:'说明文档'},
-    {href:'opensource.html', name:'算法数据'},
-  ]},
-];
+/* 顶栏与页脚已随页面静态交付，本件只挂行为：页脚主题、日期选择、浮动控件与全站预取 */
 
-function renderChrome(active, early){
-  let navHtml = '';
-  NAV_GROUPS.forEach((g,gi)=>{
-    if(g.type==='link'){
-      const cls = g.href===active ? 'nav-link active' : 'nav-link';
-      navHtml += `<a class="${cls}" href="${g.href}">${g.name}</a>`;
-    } else {
-      const hasActive = g.items.some(it=>it.href===active);
-      const items = g.items.map(it=>{
-        const c = it.href===active ? 'active' : '';
-        return `<a class="${c}" href="${it.href}">${it.name}</a>`;
-      }).join('');
-      navHtml += `<div class="nav-group${hasActive?' has-active':''}" data-gi="${gi}">
-        <button class="nav-top" onclick="toggleNavGroup(this)">${g.name}<span class="caret">▾</span></button>
-        <div class="nav-menu">${items}</div>
-      </div>`;
-    }
-  });
-
-  /* 站标印面由 assets/logo 静态文件加载；备用墨底版为 assets/logo/xuanji-seal-ink.svg，改下行 src 即切换 */
-  document.getElementById('topbar').innerHTML = `
-  <div class="topbar"><div class="wrap">
-    <a class="brand" href="index.html" aria-label="玄机排盘 首页">
-      <span class="seal" aria-hidden="true"><img src="assets/logo/xuanji-seal.svg" alt=""></span>
-      <span class="wordmark"><b>玄机排盘</b><i>XUANJI&nbsp;PAIPAN</i></span>
-    </a>
-    <nav class="nav" id="nav">${navHtml}<!-- 外部链接：fork 者改 href 指向自己的仓库与账号 --><span class="nav-tools"><button class="ai-gear" id="aiGear" title="AI 解析配置" onclick="if(window.openAiConfig)openAiConfig()">⚙AI</button><a class="ext-link" href="https://github.com/GaoRenYouShu/XuanJiPaiPan" target="_blank" rel="noopener" title="GitHub 仓库" aria-label="GitHub"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a><a class="ext-link" href="https://t.me/gaoren" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a></span></nav>
-    <button class="menu-btn" id="menuBtn" title="导航菜单" aria-expanded="false" onclick="toggleMenu()">☰</button>
-  </div></div>`;
-
+function renderChrome(){
   const f = document.getElementById('footer');
-  if(f){
+  if(f && !f.children.length){
     f.innerHTML = `<div class="wrap">
     <div class="dis">排盘结果由<a href="opensource.html" class="os-link">开源算法库</a>与自研算法共同生成，仅供文化研究与娱乐参考，请勿迷信。</div>
   </div>`;
-    /* 页脚在主题容器之外，把本页主色令牌接到页脚，注记文字与页面同色 */
-    const pg = document.querySelector('.page');
-    if(pg){
-      const cs = getComputedStyle(pg);
-      ['--foot-ink','--gold2','--red'].forEach(k=>{
-        const v = cs.getPropertyValue(k).trim();
-        if(v) f.style.setProperty(k,v);
-      });
-    }
   }
-
-  if (!early) injectSkeleton();
+  /* 页脚在主题容器之外，把本页主色令牌接到页脚，注记文字与页面同色 */
+  const pg = document.querySelector('.page');
+  if(f && pg){
+    const cs = getComputedStyle(pg);
+    ['--foot-ink','--gold2','--red'].forEach(k=>{
+      const v = cs.getPropertyValue(k).trim();
+      if(v) f.style.setProperty(k,v);
+    });
+  }
   defaultToday();
   initPickers();
   injectBaziLinkBanner();
@@ -173,6 +85,7 @@ function injectScrollJump(){
 
 /* 八字联动横幅：从八字页跳转进入（?fromBazi=1）时，在页面顶部显示命盘背景信息 + 返回八字页按钮 */
 function injectBaziLinkBanner(){
+  if (typeof URLSearchParams === 'undefined') return;
   const p=new URLSearchParams(location.search);
   if(p.get('fromBazi')!=='1') return;
   const pg=document.querySelector('.page'); if(!pg) return;
@@ -483,18 +396,6 @@ function xjShareRecast(recast){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', sweepInvalidDates);
   else sweepInvalidDates();
   window.addEventListener('load', sweepInvalidDates);
-
-  /* 骨架屏：日历网格加载占位（JS 渲染前显示，render() 自动替换） */
-  window.injectSkeleton = function(){
-    const grid = document.getElementById('calGrid');
-    if(!grid || grid.children.length) return;
-    const wds = ['一','二','三','四','五','六','日'];
-    let html = wds.map(w => `<div class="sk-cell wd"></div>`).join('');
-    for(let r=0;r<6;r++){
-      for(let c=0;c<7;c++) html += '<div class="sk-cell"></div>';
-    }
-    grid.innerHTML = html;
-  };
 })();
 
 /* ===== 折叠块状态读取（全站共用） =====
@@ -1226,14 +1127,15 @@ window.xjShuffle = xjShuffle;
   window.addEventListener('resize', function(){ clearTimeout(timer); timer = setTimeout(run, 150); });
 })();
 
-/* 顶栏与页脚随 app.js 末段渲染，不等各页专用脚本；活动页按当前路径判定。 */
-if (typeof document !== 'undefined' && document.getElementById && document.getElementById('topbar') && typeof location !== 'undefined') {
-  renderChrome(location.pathname.split('/').pop() || 'index.html', true);
+/* 框架已随页面静态交付，本件末段只挂页脚主题、日期选择与浮动控件 */
+if (typeof document !== 'undefined' && typeof document.getElementById === 'function' && typeof document.querySelector === 'function') {
+  try { renderChrome(); } catch (e) { /* 宿主缺全量 DOM 时跳过 */ }
 }
 
 /* 首屏加载后逐页预取全站 HTML，后续导航直接命中缓存；会话内只跑一次，慢网与省流量模式跳过。 */
 window.addEventListener('load', function () {
   try {
+    if (!(navigator.serviceWorker && navigator.serviceWorker.controller)) return;
     if (sessionStorage.getItem('xj-prefetch')) return;
     sessionStorage.setItem('xj-prefetch', '1');
     var conn = navigator.connection || {};
