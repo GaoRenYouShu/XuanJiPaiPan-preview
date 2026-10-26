@@ -1230,3 +1230,29 @@ window.xjShuffle = xjShuffle;
 if (typeof document !== 'undefined' && document.getElementById && document.getElementById('topbar') && typeof location !== 'undefined') {
   renderChrome(location.pathname.split('/').pop() || 'index.html');
 }
+
+/* 首屏加载后逐页预取全站 HTML，后续导航直接命中缓存；会话内只跑一次，慢网与省流量模式跳过。 */
+window.addEventListener('load', function () {
+  try {
+    if (sessionStorage.getItem('xj-prefetch')) return;
+    sessionStorage.setItem('xj-prefetch', '1');
+    var conn = navigator.connection || {};
+    if (conn.saveData || /2g|3g/.test(conn.effectiveType || '')) return;
+    var pages = ['404.html', 'bazi.html', 'cezi.html', 'daliuren.html', 'daoli.html', 'dianji.html',
+      'fengshui-yin.html', 'fengshui.html', 'foli.html', 'hehun.html', 'heluo.html', 'huangji.html',
+      'index.html', 'laohuangli.html', 'lenormand.html', 'lingqian.html', 'liuyao.html', 'luopan.html',
+      'meihua.html', 'mianxiang.html', 'minsu.html', 'opensource.html', 'qimen.html', 'qizheng.html',
+      'shouxiang.html', 'shuoming.html', 'taisui.html', 'taiyi.html', 'tarot.html', 'tieban.html',
+      'wannianli.html', 'xiaoliuren.html', 'xingming.html', 'xingxiu.html', 'xingzhan.html', 'yunqi.html',
+      'zangli.html', 'zeri.html', 'zhougong.html', 'ziwei.html'];
+    var cur = location.pathname.split('/').pop() || 'index.html';
+    var i = 0;
+    function next() {
+      if (i >= pages.length) return;
+      var p = pages[i++];
+      if (p === cur) { next(); return; }
+      fetch(p, { cache: 'no-cache' }).catch(function () {}).then(function () { setTimeout(next, 120); });
+    }
+    setTimeout(next, 1200);
+  } catch (e) { /* 预取失败不影响页面 */ }
+});
