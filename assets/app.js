@@ -81,7 +81,7 @@ const NAV_GROUPS = [
   ]},
 ];
 
-function renderChrome(active){
+function renderChrome(active, early){
   let navHtml = '';
   NAV_GROUPS.forEach((g,gi)=>{
     if(g.type==='link'){
@@ -127,7 +127,7 @@ function renderChrome(active){
     }
   }
 
-  injectSkeleton();
+  if (!early) injectSkeleton();
   defaultToday();
   initPickers();
   injectBaziLinkBanner();
@@ -1228,7 +1228,7 @@ window.xjShuffle = xjShuffle;
 
 /* 顶栏与页脚随 app.js 末段渲染，不等各页专用脚本；活动页按当前路径判定。 */
 if (typeof document !== 'undefined' && document.getElementById && document.getElementById('topbar') && typeof location !== 'undefined') {
-  renderChrome(location.pathname.split('/').pop() || 'index.html');
+  renderChrome(location.pathname.split('/').pop() || 'index.html', true);
 }
 
 /* 首屏加载后逐页预取全站 HTML，后续导航直接命中缓存；会话内只跑一次，慢网与省流量模式跳过。 */
