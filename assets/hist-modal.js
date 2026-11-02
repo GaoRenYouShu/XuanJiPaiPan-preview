@@ -94,5 +94,33 @@
     e.sub = e.q;
     push(key, e, function (h) { return h.sp === e.sp && h.q === e.q && JSON.stringify(h.picks) === JSON.stringify(e.picks); });
   }
-  window.xjHist = { open: open, close: close, render: render, del: del, push: push, time: time, savePicks: savePicks };
+  /* 表单收集与回填：字段表由页面给，共享件只按 id 读写 */
+  function collect(ids) {
+    var o = {};
+    (ids || []).forEach(function (id) {
+      var el = document.getElementById(id); if (!el) return;
+      o[id] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    return o;
+  }
+  function apply(ids, o) {
+    (ids || []).forEach(function (id) {
+      var el = document.getElementById(id); if (!el) return;
+      if (el.type === 'checkbox') el.checked = !!(o && o[id]);
+      else el.value = (o && o[id] != null) ? o[id] : '';
+      if (el.tagName === 'SELECT') el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  }
+  function keyOf(o) {
+    if (!o) return '';
+    return Object.keys(o).sort().map(function (k) { return k + '=' + String(o[k]); }).join('|');
+  }
+  function get(key, i) {
+    var his = read(key);
+    return his[i] || null;
+  }
+  window.xjHist = {
+    open: open, close: close, render: render, del: del, push: push, time: time, savePicks: savePicks,
+    collect: collect, apply: apply, key: keyOf, get: get
+  };
 })();

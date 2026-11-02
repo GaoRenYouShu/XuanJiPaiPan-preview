@@ -141,16 +141,16 @@
         },
         "critical": {
           "name": "daliuren.critical.css",
-          "hash": "2cf90509",
+          "hash": "5491206f",
           "file": "assets/dist/css/daliuren.critical.css",
-          "bytes": 13547,
-          "gzip": 3985
+          "bytes": 13700,
+          "gzip": 4005
         }
       },
       "fullBytes": 106061,
       "fullGzip": 22384,
-      "criticalBytes": 13547,
-      "criticalGzip": 3985
+      "criticalBytes": 13700,
+      "criticalGzip": 4005
     },
     "daoli": {
       "sources": [
@@ -633,16 +633,16 @@
         },
         "critical": {
           "name": "liuyao.critical.css",
-          "hash": "d897b0e9",
+          "hash": "36192d68",
           "file": "assets/dist/css/liuyao.critical.css",
-          "bytes": 17625,
-          "gzip": 4909
+          "bytes": 18115,
+          "gzip": 5030
         }
       },
       "fullBytes": 105142,
       "fullGzip": 22607,
-      "criticalBytes": 17625,
-      "criticalGzip": 4909
+      "criticalBytes": 18115,
+      "criticalGzip": 5030
     },
     "luopan": {
       "sources": [
@@ -701,16 +701,16 @@
         },
         "critical": {
           "name": "meihua.critical.css",
-          "hash": "07361473",
+          "hash": "89e9082c",
           "file": "assets/dist/css/meihua.critical.css",
-          "bytes": 13960,
-          "gzip": 4165
+          "bytes": 13909,
+          "gzip": 4160
         }
       },
       "fullBytes": 100478,
       "fullGzip": 21309,
-      "criticalBytes": 13960,
-      "criticalGzip": 4165
+      "criticalBytes": 13909,
+      "criticalGzip": 4160
     },
     "mianxiang": {
       "sources": [
@@ -1013,16 +1013,16 @@
         },
         "critical": {
           "name": "taiyi.critical.css",
-          "hash": "d18d324d",
+          "hash": "74d9b225",
           "file": "assets/dist/css/taiyi.critical.css",
-          "bytes": 14498,
-          "gzip": 4067
+          "bytes": 14646,
+          "gzip": 4086
         }
       },
       "fullBytes": 99134,
       "fullGzip": 21085,
-      "criticalBytes": 14498,
-      "criticalGzip": 4067
+      "criticalBytes": 14646,
+      "criticalGzip": 4086
     },
     "tarot": {
       "sources": [
@@ -1508,8 +1508,8 @@
   "totals": {
     "fullBytes": 3999904,
     "fullGzip": 863784,
-    "criticalBytes": 580334,
-    "criticalGzip": 176693
+    "criticalBytes": 581074,
+    "criticalGzip": 176848
   },
   "sharedHash": "e7bb3b8b1529a10b"
 }

@@ -364,7 +364,7 @@ const DATA=[
   link:'assets/ai-lazy.js',
   fn:'⚙AI 按钮的按需入口：未加载面板脚本时点击再取 ai.js，已加载则直接打开配置；首屏不下载整包。',
   note:'源码 ai-lazy.js。全站共享；AI 面板仍由 ai.js 提供。'},
- {name:'历史记录弹层共享件（ hist-modal.js ）', type:'self', v:1, s:3.8,
+ {name:'历史记录弹层共享件（ hist-modal.js ）', type:'self', v:1, s:4.3,
   link:'assets/hist-modal.js',
   fn:'历史记录弹层：三列行（时间、内容、操作），每条可重开与删除，空态与脚注同档；ESC 与点遮罩关闭，九条上限由各页存档口径承载。',
   note:'源码 hist-modal.js。六爻、梅花、灵签三页共用。'},
