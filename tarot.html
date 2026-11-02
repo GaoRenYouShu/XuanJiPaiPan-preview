@@ -373,6 +373,7 @@ body:has(.page-tr) .scroll-jump:not(.show){display:none}</style>
       </div>
       <div class="field"><label for="question">所问之事（可选）</label><input id="question" placeholder="如：近期事业发展…"></div>
       <button class="btn gold" onclick="draw()">洗牌抽牌</button>
+      <button class="btn soft" onclick="showTrHistory()">历史记录</button>
     </div>
     <div id="out"></div>
   <div id="aiMount"><details class="ai-block" id="aiBlock">
@@ -402,7 +403,8 @@ body:has(.page-tr) .scroll-jump:not(.show){display:none}</style>
 <div id="trMask" onclick="if(event.target===this)trClose()"><div class="tr-modal" id="trModalBox"></div></div>
 <script defer fetchpriority="low" src="assets/app.js"></script>
 <script defer fetchpriority="low" src="assets/ai.js"></script>
-<script defer fetchpriority="low" src="assets/dist/js/inline-tarot-03.js"></script>
+<script defer fetchpriority="low" src="assets/hist-modal.js"></script>
 <script defer fetchpriority="low" src="assets/dist/js/inline-tarot-04.js"></script>
+<script defer fetchpriority="low" src="assets/dist/js/inline-tarot-05.js"></script>
 </body>
 </html>
