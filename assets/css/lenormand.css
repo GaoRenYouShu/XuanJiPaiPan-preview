@@ -230,6 +230,10 @@ html .page .lead + section.mod > .mod-head{margin-top:calc(-1 * var(--sp-4));pad
 
 .form-row .field input,.form-row .field select{width:auto;max-width:100%;display:inline-block}
 
+/* 抽牌与历史同排：钮随内容宽，行宽由所在表单行决定 */
+.page-ln .ln-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2)}
+.page-ln .ln-actions > .btn{flex:0 0 auto}
+
 .btn{
   height:30px;padding:0 16px;border:1px solid transparent;border-radius:0;cursor:pointer;
   background:var(--red);color:#fff;font-size:13px;font-weight:400;
@@ -2153,8 +2157,8 @@ to{opacity:1;transform:none}}
      所问之事为长文本输入框，整行铺满系其本分，不在此列。 */
   .page-ln .page > .form-row .field:has(#spread),.page-ln .page > .form-row .field:has(#sig){flex:0 0 auto;width:auto;align-self:flex-start}
   .page-ln .page > .form-row .field:has(#spread) select,.page-ln .page > .form-row .field:has(#sig) select{width:auto;max-width:100%}
-  /* 抽牌钮占满一行：列向容器里 flex-basis 即主轴（高），写百分比会盖掉 .btn 的 30px 定高，故取 auto */
-  .page-ln .page > .form-row .btn{flex:0 0 auto;width:100%}
+  /* 抽牌与历史两个钮同排：行容器占满一格，钮随内容宽，窄屏由行自身换行 */
+  .page-ln .page > .form-row > .ln-actions{flex:0 0 auto;width:100%}
   .page-ln .leno-box{grid-template-columns:repeat(2,1fr)}
   /* 大全景移动端：3 列放大砖块 */
   .page-ln .leno-gt{grid-template-columns:repeat(3,1fr)}
