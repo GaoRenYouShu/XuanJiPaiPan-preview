@@ -297,18 +297,18 @@
         "assets/dist/js/data-bazi-data.js",
         "assets/dist/js/bazi.js"
       ],
-      "bytes": 173950,
-      "gzipBytes": 61926,
-      "firstLoadBytes": 884828,
-      "firstLoadGzipBytes": 327208,
+      "bytes": 174983,
+      "gzipBytes": 62321,
+      "firstLoadBytes": 885861,
+      "firstLoadGzipBytes": 327603,
       "sourceHashes": {
         "assets/lunar.js": "364b4e61",
-        "assets/app.js": "33f96014",
+        "assets/app.js": "f1153c86",
         "assets/latlng.js": "999dd9cd",
         "assets/bazi-data.js": "a26a8e0b",
         "assets/bazhai.js": "06bf2d37",
-        "assets/xuanji-lib.js": "cf421f17",
-        "assets/ai.js": "803f30bb",
+        "assets/xuanji-lib.js": "6f76b8b5",
+        "assets/ai.js": "f77e0512",
         "assets/bazi-app.js": "b5b6f329",
         "assets/meta.js": "51d53d46"
       },
@@ -337,6 +337,7 @@
           "assets/bazi-mangpai.js",
           "assets/bazi-xinpai.js",
           "assets/wheel.js",
+          "assets/bazi-lantai.js",
           "assets/bazi-core.js"
         ],
         "headScripts": [
@@ -344,10 +345,10 @@
         ]
       },
       "baseline": {
-        "staticBytes": 1312340,
-        "staticGzipBytes": 443476,
-        "fullBytes": 2471072,
-        "fullGzipBytes": 845171
+        "staticBytes": 1313798,
+        "staticGzipBytes": 444014,
+        "fullBytes": 2503552,
+        "fullGzipBytes": 856266
       }
     },
     "cezi": {

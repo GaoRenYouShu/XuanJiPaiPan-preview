@@ -48,16 +48,16 @@
         },
         {
           "file": "assets/css/bazi.css",
-          "bytes": 126885
+          "bytes": 127445
         }
       ],
       "files": {
         "full": {
           "name": "bazi.css",
-          "hash": "1029e9d1",
+          "hash": "31f89d41",
           "file": "assets/dist/css/bazi.css",
-          "bytes": 134349,
-          "gzip": 31163
+          "bytes": 134909,
+          "gzip": 31305
         },
         "critical": {
           "name": "bazi.critical.css",
@@ -67,8 +67,8 @@
           "gzip": 5731
         }
       },
-      "fullBytes": 134349,
-      "fullGzip": 31163,
+      "fullBytes": 134909,
+      "fullGzip": 31305,
       "criticalBytes": 20370,
       "criticalGzip": 5731
     },
@@ -1506,8 +1506,8 @@
     }
   },
   "totals": {
-    "fullBytes": 4001129,
-    "fullGzip": 864130,
+    "fullBytes": 4001689,
+    "fullGzip": 864272,
     "criticalBytes": 580958,
     "criticalGzip": 176799
   },
