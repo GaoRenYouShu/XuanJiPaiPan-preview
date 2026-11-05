@@ -26,7 +26,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
 
-<!-- 首屏字形全收在 nssc-chrome.woff2 里，故只预载它一片；分片预载会把首屏用不上的字节一并拉下。 -->
+<!-- 首屏字形全收在页级子集里，只预载 index-0 与 index-1 两片；分片预载会把首屏用不上的字节一并拉下。 -->
 <link rel="stylesheet" href="assets/dist/css/base.css">
 <style data-critical>/* 本页首屏样式。 */
 
