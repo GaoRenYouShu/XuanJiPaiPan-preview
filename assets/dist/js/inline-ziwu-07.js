@@ -281,7 +281,7 @@
     var h = '<h4 class="jl-sub">经络学说源流</h4>'
       + '<p class="jl-note">经络学说以《灵枢》经脉为根本，十二经循行、是动所生病与十五络脉具在其中；《素问》气穴、气府、骨空诸论补腧穴与骨度。晋皇甫谧《针灸甲乙经》汇集腧穴定位与主治，宋王惟一《铜人腧穴针灸图经》定官学形制，元滑寿《十四经发挥》以任督与十二经合为十四经，明杨继洲《针灸大成》总汇穴法歌诀，清李学川《针灸逢源》与《医宗金鉴》定三百六十一穴之数。</p>'
       + '<h4 class="jl-sub">子午流注源流</h4>'
-      + '<p class="jl-note">子午流注以十二时辰配十二经，纳支法本于《灵枢》经脉气血流注与《针灸大成》；纳甲法、灵龟八法、飞腾八法歌诀与日时干支数表见《针灸大全》，金何若愚《子午流注针经》为纳甲法早期专书。四法各有流派，异文并列，本页不裁断。</p>'
+      + '<p class="jl-note">子午流注以十二时辰配十二经，纳支法本于《灵枢》经脉气血流注与《针灸大成》；纳甲法、灵龟八法、飞腾八法歌诀与逐日逐时开穴见《针灸大全》，金何若愚《子午流注针经》为纳甲法早期专书。四法各有流派，异文并列，本页不裁断。</p>'
       + '<h4 class="jl-sub">取穴凡例</h4>'
       + '<p class="jl-note">定位取 GB/T 12346-2021 与 GB/T 40997-2021 的通行表述重写，骨度分寸与体表标志并见；主治取世界卫生组织标准与《针灸学》通行本，功效为本站依主治归纳；特定穴按五输、原、络、郄、募、背俞、八会、八脉交会、下合九类标注；针刺深度与角度逐穴列于针刺行，取《针灸学》通行本，各版有异者取较浅值并标诸本不一；安全提示只列禁针、慎针与孕妇禁针。</p>'
       + '<h4 class="jl-sub">典籍对照</h4>'
@@ -403,13 +403,16 @@
       if (Q[i].day === dayGan && Q[i].hour === hourZhi) { cell = Q[i]; break; }
     }
     var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
-    var h = '<div class="jl-card"><h4><b>纳甲法</b> 日历日干时支开穴</h4><dl class="jl-kv">'
+    var extra = cell && cell.note ? (/同取([^；。]+)/.exec(cell.note) || [])[1] : '';
+    var np = cell && cell.type === '开穴' ? pointOf(cell.point) : null;
+    var nature = '';
+    if (np && np.spec) for (var si = 0; si < np.spec.length; si++) if (/^五输穴/.test(np.spec[si])) nature = np.spec[si].replace('五输穴', '');
+    var h = '<div class="jl-card"><h4><b>纳甲法</b> 开穴</h4><dl class="jl-kv">'
       + row('日干', esc(dayGan) + '日')
       + row('时支', esc(hourZhi) + '时')
-      + row('开穴', cell ? (cell.type === '开穴' ? esc(cell.point) : esc(cell.type)) : '未载')
-      + row('备注', cell && cell.note ? esc(cell.note) : '—')
-      + row('核对', cell ? (cell.uncertain ? '<span class="jl-warn">异文待核</span>' : '已核') : '未载')
-      + '</dl><div class="jl-src">表据《针灸大全》纳甲法，按日历日干与时支归值日序列；逐格核对见下。</div></div>';
+      + row('开穴', cell ? (cell.type === '开穴' ? esc(cell.point) + esc(nature) : esc(cell.type)) : '未载')
+      + (extra ? row('同取', esc(extra)) : '')
+      + '</dl><div class="jl-src">开穴据《针灸大全》纳甲法。</div></div>';
 
     var dgNum = L.dayStems && L.dayBranches ? (L.dayStems[dayGan] || 0) + (L.dayBranches[gz.day.charAt(1)] || 0) : 0;
     var hgNum = L.hourStems && L.hourBranches ? (L.hourStems[gz.time.charAt(0)] || 0) + (L.hourBranches[gz.time.charAt(1)] || 0) : 0;
@@ -419,34 +422,16 @@
       var sum = dgNum + hgNum;
       var rem = sum % div; if (rem === 0) rem = div;
       var gua = L.guaPoints && (L.guaPoints[String(rem)] || L.guaPoints[rem]);
-      h += '<div class="jl-card"><h4><b>灵龟八法</b> 日时干支数配穴</h4><dl class="jl-kv">'
-        + row('日干支数', '日干' + esc(String(L.dayStems[dayGan])) + '＋日支' + esc(String(L.dayBranches[gz.day.charAt(1)])) + '＝' + esc(String(dgNum)))
-        + row('时干支数', '时干' + esc(String(L.hourStems[gz.time.charAt(0)])) + '＋时支' + esc(String(L.hourBranches[gz.time.charAt(1)])) + '＝' + esc(String(hgNum)))
-        + row('相加', esc(String(dgNum)) + '＋' + esc(String(hgNum)) + '＝' + esc(String(sum)))
-        + row('取余', (yang ? '阳日除九' : '阴日除六') + '，余' + esc(String(rem)))
+      var gp = gua ? pointOf(gua) : null, gm = gp ? meridianOf(gp.meridian) : null;
+      h += '<div class="jl-card"><h4><b>灵龟八法</b> 配穴</h4><dl class="jl-kv">'
+        + row('日时', esc(gz.day) + '日　' + esc(gz.time) + '时')
         + row('配穴', gua ? esc(gua) : '未载')
-        + '</dl><div class="jl-src">八脉交会穴配九宫，日干支数与时干支数相加，阳日除九、阴日除六，取余数配穴。</div></div>';
+        + row('归经', gm ? esc(gm.name) : '未载')
+        + row('主治', gp ? esc(gp.zz) : '未载')
+        + '</dl><div class="jl-src">取穴据《针灸大全》灵龟八法。</div></div>';
     }
 
-    h += '<h4 class="jl-sub">纳甲法一百二十格（值日序列）</h4>'
-      + '<div class="jl-note">逐格核对：开穴据《针灸大全》纳甲法，与《针灸大成》及通行教材互校；本表为十首值日序列，甲日戌开井后五穴历次跨至次日，按日期时刻查询以日历表换算，见上方查询卡。</div>'
-      + '<div class="jl-tbl-wrap"><table class="jl-tbl jl-tbl-najia"><thead><tr><th>日干</th>';
-    N.hours.forEach(function (hh) { h += '<th>' + esc(hh) + '</th>'; });
-    h += '</tr></thead><tbody>';
-    N.days.forEach(function (dd) {
-      h += '<tr><td class="jl-c0">' + esc(dd) + '</td>';
-      N.hours.forEach(function (hh) {
-        var c = null;
-        for (var k = 0; k < N.cells.length; k++) {
-          if (N.cells[k].day === dd && N.cells[k].hour === hh) { c = N.cells[k]; break; }
-        }
-        var txt = c ? (c.type === '开穴' ? c.point : (c.type === '返本还原' ? '返本' : '—')) : '—';
-        var star = c && c.type === '开穴' && /返本/.test(c.note || '') ? '＊' : '';
-        h += '<td' + (c && c.uncertain ? ' class="jl-najia-x"' : '') + ' title="' + esc(c ? (c.note || c.type) : '') + '">' + esc(txt) + star + (c && c.uncertain ? '△' : '') + '</td>';
-      });
-      h += '</tr>';
-    });
-    return h + '</tbody></table></div>';
+    return h;
   }
 
   function renderZiliu() {
@@ -476,12 +461,9 @@
       + '<div><dt>本经五行</dt><dd>' + esc(wu || '未载') + '</dd></div>'
       + '<div><dt>取穴</dt><dd>' + esc(pick ? pick[0] + '（' + WUSHU_NAMES[pickIdx] + '，' + pick[1] + '）' : '本经五输穴未载') + '</dd></div>'
       + '<div><dt>主治</dt><dd>' + esc(p ? p.zz : '未载') + '</dd></div>'
-      + '<div><dt>推算</dt><dd>' + esc(m ? '当令经为' + m.name + '，五行属' + wu + '；' + (mode === 'bu' ? '补法取生' + wu + '之' + target + '，' : '泻法取' + wu + '所生之' + target + '，') + (pick ? '五输穴中属' + target + '者为' + pick[0] + '，故取之。' : '五输穴中未见属' + target + '者。') : '经脉未载') + '</dd></div>'
       + '</dl></div>';
 
-    h += '<div class="jl-card"><h4><b>飞腾八法</b> 时干配穴</h4><dl class="jl-kv">'
-      + '<div><dt>时干</dt><dd>' + esc(gan || '未载') + '</dd></div>'
-      + '<div><dt>卦</dt><dd>' + esc(ft ? ft.gua : '未载') + '</dd></div>'
+    h += '<div class="jl-card"><h4><b>飞腾八法</b> 取穴</h4><dl class="jl-kv">'
       + '<div><dt>取穴</dt><dd>' + esc(ft ? ft.point : '未载') + '</dd></div>'
       + '<div><dt>归经</dt><dd>' + esc(fp ? (meridianOf(fp.meridian) ? meridianOf(fp.meridian).name : '经外奇穴') : '未载') + '</dd></div>'
       + '<div><dt>主治</dt><dd>' + esc(fp ? fp.zz : '未载') + '</dd></div>'
@@ -489,12 +471,12 @@
 
     h += najiaBlock(gz);
     if (!window.ZW_NAJIA) {
-      h += '<div class="jl-note">纳甲法与灵龟八法的逐日逐时开穴表以《针灸大全》原文为准；数表未载，暂不出推算。八脉交会穴见特定穴表。</div>';
+      h += '<div class="jl-note">纳甲法与灵龟八法开穴以《针灸大全》原文为准；八脉交会穴见特定穴表。</div>';
     }
     h += '<h4 class="jl-sub">纳甲法歌诀</h4><ol class="jl-steps">';
     NAJIA_SONGS.forEach(function (s) { h += '<li>' + esc(s) + '</li>'; });
     h += '</ol>';
-    h += '<h4 class="jl-sub">灵龟八法取法</h4><p class="jl-note">八脉交会穴配九宫，日干支数与时干支数相加，阳日除九、阴日除六，取余数配穴。' + (window.ZW_NAJIA ? '日时干支数表已逐格核对。' : '日时干支数表未载。') + '</p>';
+    h += '<h4 class="jl-sub">灵龟八法出处</h4><p class="jl-note">八脉交会穴配九宫，取穴据《针灸大全》灵龟八法。</p>';
     out.innerHTML = h;
   }
 

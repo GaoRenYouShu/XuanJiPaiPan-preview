@@ -287,16 +287,13 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 
 .page-ziwu .field input:focus,.page-ziwu .field select:focus{border-color:var(--jl);outline:none}
 
-.page-ziwu .jl-query{margin-top:var(--sp-4);margin-bottom:var(--sp-2)}
+.page-ziwu .jl-query{margin-top:var(--sp-4);margin-bottom:var(--sp-3)}
 
 .page-ziwu .jl-query .field{flex:0 0 auto}
 
-.page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line)}
+.page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line);margin-bottom:var(--sp-3)}
 
 .page-ziwu .mod-sub{color:var(--jl-ink2)}
-
-.page-ziwu .mod-body > :first-child,
-.page-ziwu .mod-body > :first-child > :first-child{margin-top:0}
 
 .page-ziwu .jl-page-note{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--jl-line);font-size:12px;line-height:1.8;color:var(--jl-ink2)}
 
@@ -306,8 +303,6 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 
 @media(max-width:640px){
 .page-ziwu .tbl-hs table:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:600px}
-
-.page-ziwu .tbl-hs table.jl-tbl-najia:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:800px}
 }
 
 @media print{
@@ -452,21 +447,21 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
         <div class="field"><label for="jlZiliuDate">日期</label><span class="dt-wrap dtm-ziwu"><input id="jlZiliuDate" type="text" class="dt-input" value="2026-11-06" placeholder="YYYY-MM-DD" data-norefresh aria-label="开穴日期"></span></div>
         <div class="field"><label for="jlZiliuTime">时刻</label><span class="dt-wrap dtm-ziwu"><input id="jlZiliuTime" type="time" value="09:30" aria-label="开穴时刻"></span></div>
         <div class="field"><label for="jlZiliuMode">补泻</label><select id="jlZiliuMode" aria-label="选择补泻"><option value="bu" selected>补法</option><option value="xie">泻法</option></select></div>
-        <button id="jlZiliuBtn" class="btn gold" type="button">推演</button>
+        <button id="jlZiliuBtn" class="btn gold" type="button">查询</button>
       </div>
       <div id="jlZiliuOut"></div>
     </div>
   </section>
 
-  <div class="stage2-late">
-<section class="mod collapsed" id="jlmod-yuanliu">
+  <section class="mod collapsed" id="jlmod-yuanliu">
     <div class="mod-head" onclick="toggleMod('jlmod-yuanliu')"><span class="mod-caret">▾</span><span class="mod-title">经络源流与典籍</span><span class="mod-sub">经络学说源流、取穴凡例与典籍对照</span></div>
     <div class="mod-body">
       <div id="jlYuanliuOut"></div>
     </div>
   </section>
 
-  <p class="jl-page-note">本页为传统文化与经络学说查询，不构成诊疗建议；针刺、艾灸与用药须由执业医师施行。</p>
+  <div class="stage2-late">
+<p class="jl-page-note">本页为传统文化与经络学说查询，不构成诊疗建议；针刺、艾灸与用药须由执业医师施行。</p>
 
   <div id="aiMount"><details class="ai-block" id="aiBlock">
     <summary class="ai-head"><h3>附加功能</h3><span class="ai-status">未配置（点 ⚙AI 设置）</span></summary>

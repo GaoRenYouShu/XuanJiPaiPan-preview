@@ -258,16 +258,13 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 
 .page-ziwu .field input:focus,.page-ziwu .field select:focus{border-color:var(--jl);outline:none}
 
-.page-ziwu .jl-query{margin-top:var(--sp-4);margin-bottom:var(--sp-2)}
+.page-ziwu .jl-query{margin-top:var(--sp-4);margin-bottom:var(--sp-3)}
 
 .page-ziwu .jl-query .field{flex:0 0 auto}
 
-.page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line)}
+.page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line);margin-bottom:var(--sp-3)}
 
 .page-ziwu .mod-sub{color:var(--jl-ink2)}
-
-.page-ziwu .mod-body > :first-child,
-.page-ziwu .mod-body > :first-child > :first-child{margin-top:0}
 
 .page-ziwu .jl-page-note{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--jl-line);font-size:12px;line-height:1.8;color:var(--jl-ink2)}
 
@@ -277,8 +274,6 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 
 @media(max-width:640px){
 .page-ziwu .tbl-hs table:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:600px}
-
-.page-ziwu .tbl-hs table.jl-tbl-najia:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:800px}
 }
 
 @media print{
