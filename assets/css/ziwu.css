@@ -72,6 +72,36 @@ html,body{height:100%}
 
 .dtm-ziwu{--tk:#6b7a35;--tk2:#556226;--tk-ink:#333d1a;--tk-line:#d9e0c8;--tk-tint:#f2f5e9}
 
+/* ===== 圆盘（站内通用件，与历法五页同制式） ===== */
+.wheel{display:block;width:100%;max-width:400px;height:auto;margin:0 auto;font-family:var(--wheel-serif,var(--font-serif));
+/* 盘内只有 .w-hit 可交互，其余（弧、刻度、圈线、指针、盘心字、内外圈字）一律不接事件。 */
+  pointer-events:none}
+.wheel .w-ring{fill:none;stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-core{fill:var(--wheel-core,#fff);stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-core-hollow{fill:none;stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-fill{fill:var(--wheel-core,#fff);stroke:none}
+.wheel .w-tick{stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-tick-j{stroke:var(--wheel-arc,#666);stroke-width:1.6}
+.wheel .w-arc{fill:none;stroke:var(--wheel-arc,#666);stroke-width:3;stroke-opacity:.22;stroke-linecap:butt}
+.wheel .w-arc-solid{stroke-opacity:1}
+.wheel .w-arc-cur{stroke:var(--wheel-cur,#333);stroke-width:4;stroke-opacity:1}
+.wheel .w-needle{stroke:var(--wheel-cur,#333);stroke-width:1.5;stroke-linecap:butt}
+.wheel .w-dot{fill:var(--wheel-cur,#333)}
+.wheel .w-c1{font-size:22px;font-weight:400;letter-spacing:.1em;fill:var(--wheel-deep,#333);text-anchor:middle;dominant-baseline:central}
+.wheel .w-c2{font-size:12.5px;letter-spacing:.08em;fill:var(--wheel-ink2,#666);text-anchor:middle;dominant-baseline:central}
+.wheel .w-c3{font-size:11.5px;letter-spacing:.08em;fill:var(--wheel-ink2,#666);opacity:.8;text-anchor:middle;dominant-baseline:central}
+.wheel .w-lab{font-size:12.5px;fill:var(--wheel-ink,#444);text-anchor:middle;dominant-baseline:central}
+.wheel .w-lab-lg{font-size:13px}
+.wheel .w-lab-xl{font-size:14px}
+.wheel .w-lab-j{font-weight:700;fill:var(--wheel-deep,#333)}
+.wheel .w-lab-cur{font-weight:700;fill:var(--wheel-cur,#333)}
+.wheel .w-hit{fill:transparent;cursor:pointer;pointer-events:all;-webkit-tap-highlight-color:transparent}
+.wheel .w-hit:focus{outline:none}
+.wheel .w-sel{fill:none;pointer-events:none}
+@media (hover:hover) and (pointer:fine){
+.wheel .w-hit:hover+.w-sel{fill:var(--wheel-arc,#666);fill-opacity:.22}
+}
+
 /* ===== 页头：卷首式 ===== */
 .page-ziwu .page h1{color:var(--jl-deep);font-family:var(--jl-serif);font-size:23px;letter-spacing:.3em;text-indent:.3em;text-align:center;line-height:1.3}
 .page-ziwu .page h1::before{content:'';display:block;width:88px;height:1px;background:var(--jl-line);margin:0 auto var(--sp-3)}
@@ -118,6 +148,8 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
 .page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line)}
 .page-ziwu .mod-sub{color:var(--jl-ink2)}
 .page-ziwu .mod-body{padding-top:var(--sp-3)}
+.page-ziwu .mod-body > :first-child,
+.page-ziwu .mod-body > :first-child > :first-child{margin-top:0}
 
 /* ===== 表格 ===== */
 .page-ziwu .jl-tbl-wrap{margin-top:var(--sp-2);overflow-x:auto}
@@ -165,6 +197,7 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
   .page-ziwu .jl-strip{grid-template-columns:repeat(6,1fr)}
   .page-ziwu .jl-now-kv{grid-template-columns:72px 1fr}
   .page-ziwu .jl-kv{grid-template-columns:72px 1fr}
+  .page-ziwu .jl-tbl-wrap .tbl-hs table:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:600px}
 }
 
 @media(max-width:390px){
@@ -181,6 +214,6 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
 }
 
 /* page-font:begin */
-/* page-font-hash: e7719ea01b94 */
-@font-face{font-family:"Noto Serif SC Page";font-style:normal;font-weight:400;font-display:block;src:url(../fonts/pages/ziwu-0.woff2) format("woff2");unicode-range:U+0020-007e, U+3000-3002, U+4e00-4e01, U+4e03, U+4e09-4e0b, U+4e0d-4e0e, U+4e11, U+4e19-4e1a, U+4e2d, U+4e3a-4e3b, U+4e59, U+4e5d, U+4e8c, U+4e8e-4e8f, U+4e94, U+4ea5, U+4ee3-4ee5, U+4f20, U+4f4d, U+4fa7, U+4fd7, U+5019, U+505a, U+5148, U+5165, U+516b-516d, U+5173, U+5185, U+519c, U+51ac, U+51f8, U+51fa, U+5206, U+5219, U+521d, U+523a-523b, U+52a0, U+5305, U+5316, U+533a-533b, U+5341, U+5348, U+535c, U+5360, U+536f, U+5386, U+53a5, U+53d6-53d7, U+540d, U+547d, U+548c, U+56db, U+58ec, U+5904, U+590f, U+5915, U+591c, U+5927, U+5973, U+5b50, U+5b66, U+5b9a, U+5b9c, U+5bab, U+5bb5, U+5bc5, U+5bd2, U+5bdd, U+5c0f, U+5c45, U+5c5e, U+5df1, U+5df3, U+5e08, U+5e74, U+5e9a, U+5ea7, U+5efa, U+5eff, U+5f0f, U+5f26, U+5f52-5f53, U+5f55, U+5f85, U+5faa, U+5fc3, U+5fd7, U+6000, U+60c5, U+60ca, U+620a, U+620c, U+6210, U+6247, U+624b, U+6267, U+62e9, U+6307, U+6309, U+6362, U+636e, U+6392, U+63d0, U+652f, U+6563, U+6570, U+6587, U+65b0, U+65bd, U+65e0, U+65e2, U+65e5, U+65f6, U+660e, U+661f, U+6625, U+6653, U+6666, U+6682, U+6691, U+66f4, U+6708-6709, U+6714, U+671b, U+671f, U+672a, U+672c, U+672f, U+673a, U+6761, U+6784, U+679c, U+67e5, U+68c0, U+6b4c, U+6b63, U+6b65, U+6b8b, U+6c11, U+6c14, U+6c34, U+6cbb, U+6cbf, U+6cd5, U+6ce8, U+6d41, U+6d88, U+6e05, U+6e10, U+6ee1, U+7078, U+70b9, U+7126, U+7334, U+7384, U+7406, U+7528, U+7531-7533, U+7537, U+7545, U+7597, U+75c5, U+7678, U+767d, U+7684, U+76c8, U+76d8, U+76f8, U+7709, U+770b, U+786e, U+793a, U+79cb, U+79cd, U+7a74, U+7acb, U+7aef, U+7d22, U+7eb3, U+7ebf, U+7ecf, U+7ed3, U+7edc, U+7edf, U+7f13, U+7f6e, U+7f8a, U+809d, U+80a0, U+80a2, U+80ba, U+80be, U+80c3, U+80c6, U+80f1, U+80f8, U+8109, U+813e, U+814a, U+8180, U+8188, U+81ea, U+81f3, U+8212, U+827e, U+8292, U+836f, U+86c7, U+86f0, U+86fe, U+8840, U+884c, U+8bae, U+8bbe, U+8bca, U+8be2, U+8bef, U+8bf4, U+8bf7, U+8c37, U+8d77, U+8f6c, U+8f7d, U+8f93, U+8f9b, U+8fb0, U+8fd0, U+9009, U+901a, U+90aa, U+90e8, U+9149, U+914d, U+9488, U+9519, U+95ed, U+95f0, U+9634, U+9644, U+964d, U+96e8, U+96ea, U+971c, U+9732, U+9875, U+987b, U+9996, U+9a6c, U+9e21, U+9f99, U+ff0c, U+ff1a-ff1b}
+/* page-font-hash: 9fac1eca1da2 */
+@font-face{font-family:"Noto Serif SC Page";font-style:normal;font-weight:400;font-display:block;src:url(../fonts/pages/ziwu-0.woff2) format("woff2");unicode-range:U+0020-007e, U+3000-3002, U+4e00-4e01, U+4e03, U+4e09-4e0b, U+4e0e, U+4e11, U+4e19, U+4e3b, U+4e50, U+4e59, U+4e5d, U+4e8c, U+4e8f, U+4e94, U+4ea4-4ea5, U+4ec5, U+4f1a, U+4f4d, U+4f8b, U+4f9b, U+4fd7, U+4fde, U+4fe1, U+5019, U+5148, U+5165, U+5168, U+516b-516d, U+5171, U+5173, U+5178, U+519c, U+51ac, U+51e1, U+51f8, U+5206, U+521d, U+523b, U+529f-52a0, U+52df, U+52ff, U+5305, U+5316, U+533a, U+5341, U+5348, U+535c, U+5360, U+536f, U+5386, U+539f, U+53c2, U+53d6, U+5408, U+540c-540d, U+547d, U+56db, U+58ec, U+58f0, U+5904, U+590f, U+5915, U+591c, U+5927, U+5973, U+5a31, U+5b50, U+5b66, U+5b89, U+5b9a, U+5bb5, U+5bc5, U+5bd2, U+5bdd, U+5c0f, U+5c45, U+5df1, U+5df3, U+5e74, U+5e76, U+5e93, U+5e9a, U+5ea7, U+5eff-5f00, U+5f0f, U+5f26, U+5f52, U+5f55, U+5f85, U+5faa, U+5fc3, U+60ca, U+620a, U+620c, U+6210, U+6247, U+62e9, U+6309, U+6362, U+636e, U+6392, U+63d0, U+652f, U+6570, U+6587, U+65b0, U+65e0, U+65e2, U+65e5, U+65f6, U+660e, U+661f, U+6625, U+6653, U+6666, U+6682, U+6691, U+66f4, U+6708-6709, U+6714, U+671b, U+671f, U+672a, U+672f, U+673a, U+6761, U+679c, U+67e5, U+68c0, U+6b4c, U+6b63, U+6b8b, U+6c11, U+6c14, U+6c34, U+6cbb, U+6cd5, U+6ce8, U+6cfb, U+6d41, U+6d88, U+6e05, U+6e10, U+6e90, U+6ee1, U+7075, U+70b9, U+7126, U+7279, U+7334, U+7384, U+7406, U+751f, U+7531-7533, U+7537, U+75c5, U+7678, U+767d, U+7684, U+76c8, U+76d8, U+76f8, U+7709, U+770b, U+7814, U+786e, U+793a, U+79cb, U+79cd, U+7a74, U+7a76, U+7acb, U+7b97, U+7c4d, U+7d22, U+7eb3, U+7ecf, U+7ed3, U+7edc, U+7f6e, U+7f8a, U+8003, U+809d, U+80a0, U+80ba, U+80be, U+80c3, U+80c6, U+80f1, U+80fd, U+8109, U+813e, U+814a, U+817e, U+8180, U+81ea, U+81f3, U+8292, U+86c7, U+86f0, U+86fe, U+8840, U+884c, U+8865, U+89c1, U+8bbe, U+8bc0, U+8be2, U+8bef, U+8bf4, U+8bf7, U+8c37, U+8f7d, U+8f93, U+8f9b, U+8fb0, U+8fd0, U+8ff7, U+9009, U+90c4, U+90e8, U+9149, U+914d, U+9519, U+95ed, U+95f0, U+9644, U+964d, U+96e8, U+96ea, U+971c, U+9732, U+9875, U+98de, U+9996, U+9a6c, U+9e21, U+9f99, U+9f9f, U+ff08-ff09, U+ff0c}
 /* page-font:end */

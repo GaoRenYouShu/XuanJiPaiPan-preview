@@ -1,4 +1,4 @@
-/* 子午流注页：首屏当令卡、十二经脉、穴位查询、特定穴、十二时辰养生与经络源流。 */
+/* 子午流注页：当令查询、十二经脉、穴位查询、特定穴、十二时辰经络盘与经络源流。 */
 (function () {
   'use strict';
 
@@ -46,6 +46,26 @@
   }
   function openMod(id) { var s = $(id); if (s) s.classList.remove('collapsed'); }
 
+  function nowCard(j, next) {
+    return '<section class="jl-now">'
+      + '<div class="jl-now-head">'
+      + '<span class="jl-now-zhi">' + esc(j.zhi) + '时</span>'
+      + '<span class="jl-now-range">' + esc(j.range) + '</span>'
+      + '<span class="jl-now-tag">' + esc(j.jing) + '当令</span>'
+      + '</div>'
+      + '<div class="jl-now-jing">' + esc(j.full) + '</div>'
+      + '<dl class="jl-now-kv">'
+      + '<div><dt>属络</dt><dd>' + esc(j.shu) + '</dd></div>'
+      + '<div><dt>循行</dt><dd>' + esc(j.xingFull) + '</dd></div>'
+      + '<div><dt>当令宜做</dt><dd>' + esc(j.yi) + '</dd></div>'
+      + '<div><dt>下一时辰</dt><dd>' + esc(next.zhi) + '时 ' + esc(next.jing) + ' ' + esc(next.range) + '</dd></div>'
+      + '</dl>'
+      + '<div class="jl-now-flow">气血自上一时辰转注本经，本时辰以本经为当令，至下一时辰转注下一经。</div>'
+      + '<div class="jl-now-song">纳支歌：肺寅大卯胃辰宫，脾巳心午小未中，申膀酉肾心包戌，亥焦子胆丑肝通。</div>'
+      + '<div class="jl-now-note">本页为传统文化与经络学说查询，不构成诊疗建议；针刺、艾灸与用药须由执业医师施行。</div>'
+      + '</section>';
+  }
+
   function renderNow() {
     var out = $('jlOut');
     if (!out) return;
@@ -56,12 +76,12 @@
       return;
     }
     var list = shiling();
-    if (!list.length || !window.jlNowCard) {
+    if (!list.length) {
       out.innerHTML = '<div class="jl-empty">经络时辰表未载，请刷新页面重试。</div>';
       return;
     }
     var idx = zhiIndex(t.h);
-    out.innerHTML = window.jlNowCard(list[idx], list[(idx + 1) % 12]);
+    out.innerHTML = nowCard(list[idx], list[(idx + 1) % 12]);
     markStrip(idx);
   }
 
@@ -218,16 +238,6 @@
     out.innerHTML = h;
   }
 
-  /* ---------- 十二时辰养生 ---------- */
-  function renderYangsheng() {
-    var out = $('jlYangshengOut');
-    if (!out) return;
-    var list = shiling();
-    if (!list.length) { out.innerHTML = '<div class="jl-empty">时辰数据未载。</div>'; return; }
-    var rows = list.map(function (j) { return [j.zhi + '时', j.range, j.jing, QI_STATUS[j.zhi] || '', j.yi]; });
-    out.innerHTML = table(['时辰','时段','当令经','气血状态','宜做'], rows);
-  }
-
   /* ---------- 源流与典籍 ---------- */
   function renderYuanliu() {
     var out = $('jlYuanliuOut');
@@ -302,14 +312,29 @@
       + '<div><dt>时辰</dt><dd>' + esc(j.zhi) + '时 ' + esc(j.range) + '</dd></div>'
       + '<div><dt>当令经</dt><dd>' + esc(j.full) + '</dd></div>'
       + '<div><dt>五行</dt><dd>' + esc(m && m.wuxing ? m.wuxing : '不属五行') + '</dd></div>'
-      + '<div><dt>属络</dt><dd>' + esc(j.shu) + '</dd></div>'
-      + '<div><dt>循行</dt><dd>' + esc(j.xingFull) + '</dd></div>'
-      + '<div><dt>宜做</dt><dd>' + esc(j.yi) + '</dd></div>'
+      + '<div><dt>气血状态</dt><dd>' + esc(QI_STATUS[j.zhi] || '') + '</dd></div>'
       + '</dl>';
   }
   window.jlPickJingluo = function (i) {
+    var list = shiling();
+    if (!list[i] || !window.WHEEL) return;
     WHEEL_SEL = i;
-    if (window.WHEEL) WHEEL.pick('jlWheel', i);
+    WHEEL.pick('jlWheel', i);
+    WHEEL.lab('jlWheel', i);
+    var dg = i * 30;
+    var arc = document.getElementById('jlWheelArc');
+    if (arc) arc.setAttribute('d', WHEEL.arc(192, dg - 15, dg + 15));
+    var q0 = WHEEL.px(82, dg), q1 = WHEEL.px(116, dg);
+    var ln = document.getElementById('jlWheelNeedle');
+    if (ln) {
+      ln.setAttribute('x1', WHEEL.n(q0[0])); ln.setAttribute('y1', WHEEL.n(q0[1]));
+      ln.setAttribute('x2', WHEEL.n(q1[0])); ln.setAttribute('y2', WHEEL.n(q1[1]));
+    }
+    var dt = document.getElementById('jlWheelDot');
+    if (dt) { dt.setAttribute('cx', WHEEL.n(q1[0])); dt.setAttribute('cy', WHEEL.n(q1[1])); }
+    WHEEL.text('jlWheelC1', list[i].zhi + '时');
+    WHEEL.text('jlWheelC2', list[i].jing);
+    WHEEL.text('jlWheelC3', list[i].range);
     renderWheelDetail(i);
   };
 
@@ -438,12 +463,10 @@
 
   function init() {
     bind();
-    renderNow();
     renderMeridians();
     renderPointFilters();
     renderPoints();
     renderSpecific();
-    renderYangsheng();
     renderYuanliu();
     renderZiliu();
     renderWheel();

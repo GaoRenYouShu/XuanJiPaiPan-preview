@@ -1862,6 +1862,36 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 
 .dtm-ziwu{--tk:#6b7a35;--tk2:#556226;--tk-ink:#333d1a;--tk-line:#d9e0c8;--tk-tint:#f2f5e9}
 
+/* ===== 圆盘（站内通用件，与历法五页同制式） ===== */
+.wheel{display:block;width:100%;max-width:400px;height:auto;margin:0 auto;font-family:var(--wheel-serif,var(--font-serif));
+/* 盘内只有 .w-hit 可交互，其余（弧、刻度、圈线、指针、盘心字、内外圈字）一律不接事件。 */
+  pointer-events:none}
+.wheel .w-ring{fill:none;stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-core{fill:var(--wheel-core,#fff);stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-core-hollow{fill:none;stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-fill{fill:var(--wheel-core,#fff);stroke:none}
+.wheel .w-tick{stroke:var(--wheel-line,#c9c9c9);stroke-width:1}
+.wheel .w-tick-j{stroke:var(--wheel-arc,#666);stroke-width:1.6}
+.wheel .w-arc{fill:none;stroke:var(--wheel-arc,#666);stroke-width:3;stroke-opacity:.22;stroke-linecap:butt}
+.wheel .w-arc-solid{stroke-opacity:1}
+.wheel .w-arc-cur{stroke:var(--wheel-cur,#333);stroke-width:4;stroke-opacity:1}
+.wheel .w-needle{stroke:var(--wheel-cur,#333);stroke-width:1.5;stroke-linecap:butt}
+.wheel .w-dot{fill:var(--wheel-cur,#333)}
+.wheel .w-c1{font-size:22px;font-weight:400;letter-spacing:.1em;fill:var(--wheel-deep,#333);text-anchor:middle;dominant-baseline:central}
+.wheel .w-c2{font-size:12.5px;letter-spacing:.08em;fill:var(--wheel-ink2,#666);text-anchor:middle;dominant-baseline:central}
+.wheel .w-c3{font-size:11.5px;letter-spacing:.08em;fill:var(--wheel-ink2,#666);opacity:.8;text-anchor:middle;dominant-baseline:central}
+.wheel .w-lab{font-size:12.5px;fill:var(--wheel-ink,#444);text-anchor:middle;dominant-baseline:central}
+.wheel .w-lab-lg{font-size:13px}
+.wheel .w-lab-xl{font-size:14px}
+.wheel .w-lab-j{font-weight:700;fill:var(--wheel-deep,#333)}
+.wheel .w-lab-cur{font-weight:700;fill:var(--wheel-cur,#333)}
+.wheel .w-hit{fill:transparent;cursor:pointer;pointer-events:all;-webkit-tap-highlight-color:transparent}
+.wheel .w-hit:focus{outline:none}
+.wheel .w-sel{fill:none;pointer-events:none}
+@media (hover:hover) and (pointer:fine){
+.wheel .w-hit:hover+.w-sel{fill:var(--wheel-arc,#666);fill-opacity:.22}
+}
+
 /* ===== 页头：卷首式 ===== */
 .page-ziwu .page h1{color:var(--jl-deep);font-family:var(--jl-serif);font-size:23px;letter-spacing:.3em;text-indent:.3em;text-align:center;line-height:1.3}
 .page-ziwu .page h1::before{content:'';display:block;width:88px;height:1px;background:var(--jl-line);margin:0 auto var(--sp-3)}
@@ -1908,6 +1938,8 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
 .page-ziwu .mod-head{border-top-color:var(--jl-line);border-bottom-color:var(--jl-line)}
 .page-ziwu .mod-sub{color:var(--jl-ink2)}
 .page-ziwu .mod-body{padding-top:var(--sp-3)}
+.page-ziwu .mod-body > :first-child,
+.page-ziwu .mod-body > :first-child > :first-child{margin-top:0}
 
 /* ===== 表格 ===== */
 .page-ziwu .jl-tbl-wrap{margin-top:var(--sp-2);overflow-x:auto}
@@ -1955,6 +1987,7 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
   .page-ziwu .jl-strip{grid-template-columns:repeat(6,1fr)}
   .page-ziwu .jl-now-kv{grid-template-columns:72px 1fr}
   .page-ziwu .jl-kv{grid-template-columns:72px 1fr}
+  .page-ziwu .jl-tbl-wrap .tbl-hs table:not(.tbl-kv):has(tr>*:nth-child(4)){min-width:600px}
 }
 
 @media(max-width:390px){
