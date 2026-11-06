@@ -91,17 +91,24 @@
     var out = $('jlOut');
     if (!out) return;
     var d = parseDate($('jlDate') ? $('jlDate').value : '');
-    if (!d) {
-      out.innerHTML = '<div class="jl-empty">请输入公历日期，日期形如 2026-11-06。</div>';
+    var t = parseTime($('jlTime') ? $('jlTime').value : '');
+    if (!d || !t) {
+      out.innerHTML = '<div class="jl-empty">请输入公历日期与时刻，日期形如 2026-11-06。</div>';
       return;
     }
     if (!shiling().length) {
       out.innerHTML = '<div class="jl-empty">经络时辰表未载，请刷新页面重试。</div>';
       return;
     }
-    renderAt(zhiIndex(new Date().getHours()));
+    renderAt(zhiIndex(t.h));
   }
-  window.jlPickShichen = function (i) { renderAt(i); };
+  window.jlPickShichen = function (i) {
+    var list = shiling();
+    if (!list[i]) return;
+    var t = $('jlTime');
+    if (t) t.value = String(list[i].range).slice(0, 5);
+    renderAt(i);
+  };
 
   /* ---------- 十二经脉 ---------- */
   function renderMeridians() {
@@ -498,15 +505,19 @@
     if (!dt) return '子午流注查询：日期未填。';
     var list = shiling();
     if (!list.length) return '子午流注查询：时辰数据未载。';
-    var idx = CURRENT_IDX === null ? zhiIndex(new Date().getHours()) : CURRENT_IDX;
+    var tv = $('jlTime') ? $('jlTime').value : '';
+    var tm = parseTime(tv);
+    var idx = tm ? zhiIndex(tm.h) : (CURRENT_IDX === null ? zhiIndex(new Date().getHours()) : CURRENT_IDX);
     var j = list[idx], m = meridianByShichen(j.zhi);
-    return '所查 ' + d + '，' + j.zhi + '时（' + j.range + '）' + j.full + '当令；五行' + (m && m.wuxing ? m.wuxing : '不属五行') + '，本经' + (m ? m.count : '') + '穴；属络' + j.shu + '；宜做' + j.yi + '。本页为传统文化与经络学说查询，不构成诊疗建议。';
+    return '所查 ' + d + (tv ? ' ' + tv : '') + '，' + j.zhi + '时（' + j.range + '）' + j.full + '当令；五行' + (m && m.wuxing ? m.wuxing : '不属五行') + '，本经' + (m ? m.count : '') + '穴；属络' + j.shu + '；宜做' + j.yi + '。本页为传统文化与经络学说查询，不构成诊疗建议。';
   }
   function bind() {
     var btn = $('jlBtn');
     if (btn) btn.addEventListener('click', renderNow);
-    var jd = $('jlDate');
-    if (jd) jd.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') renderNow(); });
+    ['jlDate', 'jlTime'].forEach(function (id) {
+      var e = $(id);
+      if (e) e.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') renderNow(); });
+    });
     var pb = $('jlPointBtn');
     if (pb) pb.addEventListener('click', renderPoints);
     var zb = $('jlZiliuBtn');
