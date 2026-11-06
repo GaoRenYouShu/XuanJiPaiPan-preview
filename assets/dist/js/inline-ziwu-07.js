@@ -2,6 +2,8 @@
 (function () {
   'use strict';
 
+  var CURRENT_IDX = null;
+
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function hasData() { return !!(window.JL && window.JL.POINTS && window.JL.MERIDIANS); }
@@ -62,28 +64,44 @@
       + '</dl>'
       + '<div class="jl-now-flow">气血自上一时辰转注本经，本时辰以本经为当令，至下一时辰转注下一经。</div>'
       + '<div class="jl-now-song">纳支歌：肺寅大卯胃辰宫，脾巳心午小未中，申膀酉肾心包戌，亥焦子胆丑肝通。</div>'
-      + '<div class="jl-now-note">本页为传统文化与经络学说查询，不构成诊疗建议；针刺、艾灸与用药须由执业医师施行。</div>'
       + '</section>';
+  }
+
+  function stripHtml(idx) {
+    var list = shiling();
+    var h = '<div class="jl-strip" aria-label="十二时辰经络对照">';
+    list.forEach(function (j, i) {
+      h += '<div class="jl-strip-cell' + (i === idx ? ' on' : '') + '" data-i="' + i + '" onclick="jlPickShichen(' + i + ')">'
+        + '<b>' + esc(j.zhi) + '</b><span>' + esc(j.jing) + '</span><i>' + esc(String(j.range).replace(/:00/g, '')) + '</i></div>';
+    });
+    return h + '</div>';
+  }
+
+  function renderAt(idx) {
+    var out = $('jlOut');
+    if (!out) return;
+    var list = shiling();
+    if (!list[idx]) return;
+    CURRENT_IDX = idx;
+    out.innerHTML = stripHtml(idx) + nowCard(list[idx], list[(idx + 1) % 12]);
+    markStrip(idx);
   }
 
   function renderNow() {
     var out = $('jlOut');
     if (!out) return;
     var d = parseDate($('jlDate') ? $('jlDate').value : '');
-    var t = parseTime($('jlTime') ? $('jlTime').value : '');
-    if (!d || !t) {
-      out.innerHTML = '<div class="jl-empty">请输入公历日期与时刻，日期形如 2026-11-06。</div>';
+    if (!d) {
+      out.innerHTML = '<div class="jl-empty">请输入公历日期，日期形如 2026-11-06。</div>';
       return;
     }
-    var list = shiling();
-    if (!list.length) {
+    if (!shiling().length) {
       out.innerHTML = '<div class="jl-empty">经络时辰表未载，请刷新页面重试。</div>';
       return;
     }
-    var idx = zhiIndex(t.h);
-    out.innerHTML = nowCard(list[idx], list[(idx + 1) % 12]);
-    markStrip(idx);
+    renderAt(zhiIndex(new Date().getHours()));
   }
+  window.jlPickShichen = function (i) { renderAt(i); };
 
   /* ---------- 十二经脉 ---------- */
   function renderMeridians() {
@@ -177,11 +195,12 @@
       + '<div><dt>部位</dt><dd>' + esc(p.region || '未载') + '</dd></div>'
       + '<div><dt>定位</dt><dd>' + esc(p.loc) + '</dd></div>'
       + '<div><dt>取法</dt><dd>' + esc(p.method) + '</dd></div>'
+      + '<div><dt>针刺</dt><dd>' + (p.op ? esc(p.op) + (p.opSrc ? '<span class="jl-op-src">（' + esc(p.opSrc) + '）</span>' : '') + (p.opUncertain ? '<span class="jl-warn">（诸本不一，取较浅值）</span>' : '') : '未载') + '</dd></div>'
       + '<div><dt>功效</dt><dd>' + esc(p.fx) + '</dd></div>'
       + '<div><dt>主治</dt><dd>' + esc(p.zz) + '</dd></div>'
       + '<div><dt>特定穴</dt><dd>' + spec + '</dd></div>'
       + '<div><dt>安全</dt><dd>' + safe + '</dd></div>'
-      + '<div><dt>出处</dt><dd class="jl-src">' + esc(p.src) + '</dd></div>'
+      + '<div><dt>出处</dt><dd class="jl-src">' + esc(p.src) + (p.srcUncertain ? '<span class="jl-warn">（出处待核）</span>' : '') + '</dd></div>'
       + '</dl></div>';
   }
 
@@ -257,9 +276,7 @@
       + '<h4 class="jl-sub">子午流注源流</h4>'
       + '<p class="jl-note">子午流注以十二时辰配十二经，纳支法本于《灵枢》经脉气血流注与《针灸大成》；纳甲法、灵龟八法、飞腾八法歌诀与日时干支数表见《针灸大全》，金何若愚《子午流注针经》为纳甲法早期专书。四法各有流派，异文并列，本页不裁断。</p>'
       + '<h4 class="jl-sub">取穴凡例</h4>'
-      + '<p class="jl-note">定位取 GB/T 12346-2021 与 GB/T 40997-2021 的通行表述重写，骨度分寸与体表标志并见；主治取世界卫生组织标准与《针灸学》通行本，功效为本站依主治归纳；特定穴按五输、原、络、郄、募、背俞、八会、八脉交会、下合九类标注；安全提示只列禁针、慎针与孕妇禁针，不逐穴写针刺深度与角度。</p>'
-      + '<h4 class="jl-sub">安全声明</h4>'
-      + '<p class="jl-note">本页为传统文化与经络学说查询，不构成诊疗建议；针刺、艾灸与用药须由执业医师施行。孕妇、婴幼儿、出血倾向者与危重病人不宜自行施术。</p>'
+      + '<p class="jl-note">定位取 GB/T 12346-2021 与 GB/T 40997-2021 的通行表述重写，骨度分寸与体表标志并见；主治取世界卫生组织标准与《针灸学》通行本，功效为本站依主治归纳；特定穴按五输、原、络、郄、募、背俞、八会、八脉交会、下合九类标注；针刺深度与角度逐穴列于针刺行，取《针灸学》通行本，各版有异者取较浅值并标诸本不一；安全提示只列禁针、慎针与孕妇禁针。</p>'
       + '<h4 class="jl-sub">典籍对照</h4>'
       + table(['典籍','成书','本页所据'], rows);
     out.innerHTML = h;
@@ -368,6 +385,63 @@
       return { day: l.getDayInGanZhi(), time: l.getTimeInGanZhi() };
     } catch (e) { return null; }
   }
+  function najiaBlock(gz) {
+    var Z = window.ZW_NAJIA;
+    if (!Z || !Z.najia || !gz) return '';
+    var N = Z.najia, L = Z.linggui || {};
+    var dayGan = gz.day.charAt(0), hourZhi = gz.time.charAt(1);
+    var Q = N.calendarCells || N.cells;
+    var cell = null;
+    for (var i = 0; i < Q.length; i++) {
+      if (Q[i].day === dayGan && Q[i].hour === hourZhi) { cell = Q[i]; break; }
+    }
+    var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
+    var h = '<div class="jl-card"><h4><b>纳甲法</b> 日历日干时支开穴</h4><dl class="jl-kv">'
+      + row('日干', esc(dayGan) + '日')
+      + row('时支', esc(hourZhi) + '时')
+      + row('开穴', cell ? (cell.type === '开穴' ? esc(cell.point) : esc(cell.type)) : '未载')
+      + row('备注', cell && cell.note ? esc(cell.note) : '—')
+      + row('核对', cell ? (cell.uncertain ? '<span class="jl-warn">异文待核</span>' : '已核') : '未载')
+      + '</dl><div class="jl-src">表据《针灸大全》纳甲法，按日历日干与时支归值日序列；逐格核对见下。</div></div>';
+
+    var dgNum = L.dayStems && L.dayBranches ? (L.dayStems[dayGan] || 0) + (L.dayBranches[gz.day.charAt(1)] || 0) : 0;
+    var hgNum = L.hourStems && L.hourBranches ? (L.hourStems[gz.time.charAt(0)] || 0) + (L.hourBranches[gz.time.charAt(1)] || 0) : 0;
+    if (dgNum && hgNum) {
+      var yang = '甲丙戊庚壬'.indexOf(dayGan) >= 0;
+      var div = yang ? 9 : 6;
+      var sum = dgNum + hgNum;
+      var rem = sum % div; if (rem === 0) rem = div;
+      var gua = L.guaPoints && (L.guaPoints[String(rem)] || L.guaPoints[rem]);
+      h += '<div class="jl-card"><h4><b>灵龟八法</b> 日时干支数配穴</h4><dl class="jl-kv">'
+        + row('日干支数', '日干' + esc(String(L.dayStems[dayGan])) + '＋日支' + esc(String(L.dayBranches[gz.day.charAt(1)])) + '＝' + esc(String(dgNum)))
+        + row('时干支数', '时干' + esc(String(L.hourStems[gz.time.charAt(0)])) + '＋时支' + esc(String(L.hourBranches[gz.time.charAt(1)])) + '＝' + esc(String(hgNum)))
+        + row('相加', esc(String(dgNum)) + '＋' + esc(String(hgNum)) + '＝' + esc(String(sum)))
+        + row('取余', (yang ? '阳日除九' : '阴日除六') + '，余' + esc(String(rem)))
+        + row('配穴', gua ? esc(gua) : '未载')
+        + '</dl><div class="jl-src">八脉交会穴配九宫，日干支数与时干支数相加，阳日除九、阴日除六，取余数配穴。</div></div>';
+    }
+
+    h += '<h4 class="jl-sub">纳甲法一百二十格（值日序列）</h4>'
+      + '<div class="jl-note">逐格核对：开穴据《针灸大全》纳甲法，与《针灸大成》及通行教材互校；本表为十首值日序列，甲日戌开井后五穴历次跨至次日，按日期时刻查询以日历表换算，见上方查询卡。</div>'
+      + '<div class="jl-tbl-wrap"><table class="jl-tbl jl-tbl-najia"><thead><tr><th>日干</th>';
+    N.hours.forEach(function (hh) { h += '<th>' + esc(hh) + '</th>'; });
+    h += '</tr></thead><tbody>';
+    N.days.forEach(function (dd) {
+      h += '<tr><td class="jl-c0">' + esc(dd) + '</td>';
+      N.hours.forEach(function (hh) {
+        var c = null;
+        for (var k = 0; k < N.cells.length; k++) {
+          if (N.cells[k].day === dd && N.cells[k].hour === hh) { c = N.cells[k]; break; }
+        }
+        var txt = c ? (c.type === '开穴' ? c.point : (c.type === '返本还原' ? '返本' : '—')) : '—';
+        var star = c && c.type === '开穴' && /返本/.test(c.note || '') ? '＊' : '';
+        h += '<td' + (c && c.uncertain ? ' class="jl-najia-x"' : '') + ' title="' + esc(c ? (c.note || c.type) : '') + '">' + esc(txt) + star + (c && c.uncertain ? '△' : '') + '</td>';
+      });
+      h += '</tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+
   function renderZiliu() {
     var out = $('jlZiliuOut');
     if (!out) return;
@@ -406,32 +480,33 @@
       + '<div><dt>主治</dt><dd>' + esc(fp ? fp.zz : '未载') + '</dd></div>'
       + '</dl><div class="jl-src">歌诀：壬甲公孙即是乾，丙居艮上内关然，戊为临泣生坎水，庚属外关震相连，辛上后溪装巽卦，乙癸申脉到坤传，己土列缺南离上，丁居照海兑金全。</div></div>';
 
-    h += '<div class="jl-note">纳甲法与灵龟八法的逐日逐时开穴表以《针灸大全》原文为准，数表待逐格核对；本页先列纳甲歌诀与灵龟八法取法，暂不出推算。八脉交会穴见特定穴表。</div>';
+    h += najiaBlock(gz);
+    if (!window.ZW_NAJIA) {
+      h += '<div class="jl-note">纳甲法与灵龟八法的逐日逐时开穴表以《针灸大全》原文为准；数表未载，暂不出推算。八脉交会穴见特定穴表。</div>';
+    }
     h += '<h4 class="jl-sub">纳甲法歌诀</h4><ol class="jl-steps">';
     NAJIA_SONGS.forEach(function (s) { h += '<li>' + esc(s) + '</li>'; });
     h += '</ol>';
-    h += '<h4 class="jl-sub">灵龟八法取法</h4><p class="jl-note">八脉交会穴配九宫，日干支数与时干支数相加，阳日除九、阴日除六，取余数配穴。日时干支数表待逐格核对，核对前不出推算。</p>';
+    h += '<h4 class="jl-sub">灵龟八法取法</h4><p class="jl-note">八脉交会穴配九宫，日干支数与时干支数相加，阳日除九、阴日除六，取余数配穴。' + (window.ZW_NAJIA ? '日时干支数表已逐格核对。' : '日时干支数表未载。') + '</p>';
     out.innerHTML = h;
   }
 
   /* ---------- 事件与初始化 ---------- */
   function ziwuAiContext() {
     var d = $('jlDate') ? $('jlDate').value : '';
-    var t = $('jlTime') ? $('jlTime').value : '';
-    var dt = parseDate(d), tm = parseTime(t);
-    if (!dt || !tm) return '子午流注查询：日期或时刻未填。';
+    var dt = parseDate(d);
+    if (!dt) return '子午流注查询：日期未填。';
     var list = shiling();
     if (!list.length) return '子午流注查询：时辰数据未载。';
-    var j = list[zhiIndex(tm.h)], m = meridianByShichen(j.zhi);
-    return '所查 ' + d + ' ' + t + '，' + j.zhi + '时 ' + j.full + '当令；五行' + (m && m.wuxing ? m.wuxing : '不属五行') + '，本经' + (m ? m.count : '') + '穴；属络' + j.shu + '；宜做' + j.yi + '。本页为传统文化与经络学说查询，不构成诊疗建议。';
+    var idx = CURRENT_IDX === null ? zhiIndex(new Date().getHours()) : CURRENT_IDX;
+    var j = list[idx], m = meridianByShichen(j.zhi);
+    return '所查 ' + d + '，' + j.zhi + '时（' + j.range + '）' + j.full + '当令；五行' + (m && m.wuxing ? m.wuxing : '不属五行') + '，本经' + (m ? m.count : '') + '穴；属络' + j.shu + '；宜做' + j.yi + '。本页为传统文化与经络学说查询，不构成诊疗建议。';
   }
   function bind() {
     var btn = $('jlBtn');
     if (btn) btn.addEventListener('click', renderNow);
-    ['jlDate', 'jlTime'].forEach(function (id) {
-      var e = $(id);
-      if (e) e.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') renderNow(); });
-    });
+    var jd = $('jlDate');
+    if (jd) jd.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') renderNow(); });
     var pb = $('jlPointBtn');
     if (pb) pb.addEventListener('click', renderPoints);
     var zb = $('jlZiliuBtn');
@@ -458,7 +533,9 @@
 
   window.toggleMod = function (id) {
     var el = $(id);
-    if (el) el.classList.toggle('collapsed');
+    if (!el) return;
+    el.classList.toggle('collapsed');
+    window.dispatchEvent(new Event('resize'));
   };
 
   function init() {
