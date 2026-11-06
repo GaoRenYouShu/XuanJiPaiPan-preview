@@ -405,6 +405,12 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
     <div class="mod-head" onclick="toggleMod('jlmod-wheel')"><span class="mod-caret">▾</span><span class="mod-title">十二时辰经络盘</span><span class="mod-sub">十二时辰配十二经，点扇区换看</span></div>
     <div class="mod-body">
       <div class="wheel-block">
+        <div class="jl-tabs jl-wheel-tabs">
+          <button class="jl-tab on" type="button" data-mode="jing" onclick="jlWheelMode('jing')">当令经络</button>
+          <button class="jl-tab" type="button" data-mode="shu" onclick="jlWheelMode('shu')">五输原穴</button>
+        </div>
+        <div id="jlWheelNow" class="jl-wheel-now"></div>
+        <div class="jl-wheel-legend">外圈十二经，内圈十二时辰；指针为当前时刻，点扇区查详情。</div>
         <div id="jlWheelHost"></div>
         <div class="wheel-detail" id="jlWheelDetail"></div>
       </div>

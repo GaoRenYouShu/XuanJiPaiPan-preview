@@ -290,7 +290,24 @@
   }
 
   /* ---------- 十二时辰经络盘 ---------- */
-  var WHEEL_SEL = 0;
+  var WHEEL_SEL = 0, WHEEL_MODE = 'jing', WHEEL_TIMER = null;
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function clockHands(h, mi) {
+    if (!window.WHEEL) return;
+    var ha = (h % 24 + mi / 60) * 15, ma = mi * 6;
+    var hq = WHEEL.px(54, ha), mq = WHEEL.px(70, ma);
+    var hl = document.getElementById('jlWheelHour');
+    if (hl) { hl.setAttribute('x2', WHEEL.n(hq[0])); hl.setAttribute('y2', WHEEL.n(hq[1])); }
+    var ml = document.getElementById('jlWheelMin');
+    if (ml) { ml.setAttribute('x2', WHEEL.n(mq[0])); ml.setAttribute('y2', WHEEL.n(mq[1])); }
+  }
+  function updateWheelNow() {
+    var now = new Date(), h = now.getHours(), mi = now.getMinutes();
+    var list = shiling(), j = list[zhiIndex(h)];
+    var el = $('jlWheelNow');
+    if (el && j) el.textContent = '现在 ' + pad2(h) + ':' + pad2(mi) + '，' + j.zhi + '时 ' + j.jing + '当令';
+    clockHands(h, mi);
+  }
   function renderWheel() {
     var host = $('jlWheelHost');
     if (!host || !window.WHEEL) return;
@@ -304,26 +321,38 @@
       id: 'jlWheel', aria: '十二时辰经络盘', n: 12,
       span: function (i) { return [i * 30 - 15, i * 30 + 15]; },
       mid: function (i) { return i * 30; },
-      arc: 192, rIn: 120, hit1: 198, tick0: 168, tick1: 176, p0: 82, p1: 116, out: 182, core: 78,
-      sel: ci, cur: ci,
-      selId: 'jlWheelArc', anchorId: 'jlWheelArcFix', needleId: 'jlWheelNeedle', dotId: 'jlWheelDot',
+      arc: 192, rIn: 120, hit1: 198, out: 182, core: 78,
+      sel: ci, cur: null, tick: false,
+      selId: 'jlWheelArc',
       onclick: 'jlPickJingluo',
+      rings: [{ r: 182, cls: 'w-ring' }, { r: 150, cls: 'w-ring' }, { r: 120, cls: 'w-ring' }, { r: 78, cls: 'w-core' }],
       labelsOut: function (i, dg) {
         var tp = WHEEL.px(210, dg);
-        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-xl' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" transform="rotate(' + WHEEL.ring(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + list[i].zhi + '</text>';
+        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-xl' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" transform="rotate(' + WHEEL.dir(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + esc(list[i].jing) + '</text>';
       },
       labelsIn: function (i, dg) {
-        var j = list[i], tp = WHEEL.px(148, dg);
-        var color = WX_COLOR[JING_WX[j.jing]] || '#6b7a35';
-        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-lg' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" style="fill:' + color + '" transform="rotate(' + WHEEL.radial(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + j.jing + '</text>';
+        var tp = WHEEL.px(136, dg);
+        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-lg' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" transform="rotate(' + WHEEL.dir(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + esc(list[i].zhi) + '</text>';
       },
-      center: [
-        { y: WHEEL.C - 16, cls: 'w-c1', id: 'jlWheelC1', text: list[ci].zhi + '时' },
-        { y: WHEEL.C + 14, cls: 'w-c2', id: 'jlWheelC2', text: list[ci].jing },
-        { y: WHEEL.C + 34, cls: 'w-c3', id: 'jlWheelC3', text: list[ci].range }
-      ]
+      extra: function () {
+        var s = '';
+        for (var h = 0; h < 24; h++) {
+          var a = h * 15, major = h % 2 === 0;
+          var q0 = WHEEL.px(major ? 164 : 167, a), q1 = WHEEL.px(173, a);
+          s += '<line x1="' + WHEEL.n(q0[0]) + '" y1="' + WHEEL.n(q0[1]) + '" x2="' + WHEEL.n(q1[0]) + '" y2="' + WHEEL.n(q1[1]) + '" class="w-tick-24' + (major ? ' w-tick-24m' : '') + '"/>';
+          var tp = WHEEL.px(157, a);
+          s += '<circle cx="' + WHEEL.n(tp[0]) + '" cy="' + WHEEL.n(tp[1]) + '" r="7" class="w-hour-dot"/>';
+          s += '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-hour">' + (h === 0 ? '24' : pad2(h)) + '</text>';
+        }
+        return s;
+      }
     });
+    var svg = host.querySelector('svg.wheel');
+    if (svg) svg.insertAdjacentHTML('beforeend', '<line id="jlWheelHour" class="w-hand-hour" x1="220" y1="220" x2="220" y2="166"/><line id="jlWheelMin" class="w-hand-min" x1="220" y1="220" x2="220" y2="150"/><circle class="w-pin" cx="220" cy="220" r="4"/>');
     renderWheelDetail(ci);
+    updateWheelNow();
+    if (WHEEL_TIMER) clearInterval(WHEEL_TIMER);
+    WHEEL_TIMER = setInterval(updateWheelNow, 30000);
   }
 
   function renderWheelDetail(i) {
@@ -332,13 +361,32 @@
     var list = shiling();
     if (!list[i]) return;
     var j = list[i], m = meridianByShichen(j.zhi);
+    var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
+    if (WHEEL_MODE === 'shu') {
+      var W = (m && window.JL.WUSHU[m.id]) ? window.JL.WUSHU[m.id] : [];
+      var shu = W.map(function (x, k) { return esc(x[0]) + '（' + WUSHU_NAMES[k] + '，' + esc(x[1]) + '）'; }).join('、') || '未载';
+      var yuan = (m && window.JL.SPECIFIC && window.JL.SPECIFIC.yuan) ? window.JL.SPECIFIC.yuan[m.id] : '';
+      out.innerHTML = '<dl class="jl-kv">'
+        + row('时辰', esc(j.zhi) + '时 ' + esc(j.range))
+        + row('当令经', esc(j.full))
+        + row('五输', shu)
+        + row('原穴', yuan ? esc(yuan) : '未载')
+        + '</dl>';
+      return;
+    }
     out.innerHTML = '<dl class="jl-kv">'
-      + '<div><dt>时辰</dt><dd>' + esc(j.zhi) + '时 ' + esc(j.range) + '</dd></div>'
-      + '<div><dt>当令经</dt><dd>' + esc(j.full) + '</dd></div>'
-      + '<div><dt>五行</dt><dd>' + esc(m && m.wuxing ? m.wuxing : '不属五行') + '</dd></div>'
-      + '<div><dt>气血状态</dt><dd>' + esc(QI_STATUS[j.zhi] || '') + '</dd></div>'
+      + row('时辰', esc(j.zhi) + '时 ' + esc(j.range))
+      + row('当令经', esc(j.full))
+      + row('五行', esc(m && m.wuxing ? m.wuxing : '不属五行'))
+      + row('气血状态', esc(QI_STATUS[j.zhi] || ''))
       + '</dl>';
   }
+  window.jlWheelMode = function (mode) {
+    WHEEL_MODE = mode === 'shu' ? 'shu' : 'jing';
+    var tabs = document.querySelectorAll('.jl-wheel-tabs .jl-tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-mode') === WHEEL_MODE);
+    renderWheelDetail(WHEEL_SEL);
+  };
   window.jlPickJingluo = function (i) {
     var list = shiling();
     if (!list[i] || !window.WHEEL) return;
@@ -348,17 +396,6 @@
     var dg = i * 30;
     var arc = document.getElementById('jlWheelArc');
     if (arc) arc.setAttribute('d', WHEEL.arc(192, dg - 15, dg + 15));
-    var q0 = WHEEL.px(82, dg), q1 = WHEEL.px(116, dg);
-    var ln = document.getElementById('jlWheelNeedle');
-    if (ln) {
-      ln.setAttribute('x1', WHEEL.n(q0[0])); ln.setAttribute('y1', WHEEL.n(q0[1]));
-      ln.setAttribute('x2', WHEEL.n(q1[0])); ln.setAttribute('y2', WHEEL.n(q1[1]));
-    }
-    var dt = document.getElementById('jlWheelDot');
-    if (dt) { dt.setAttribute('cx', WHEEL.n(q1[0])); dt.setAttribute('cy', WHEEL.n(q1[1])); }
-    WHEEL.text('jlWheelC1', list[i].zhi + '时');
-    WHEEL.text('jlWheelC2', list[i].jing);
-    WHEEL.text('jlWheelC3', list[i].range);
     renderWheelDetail(i);
   };
 

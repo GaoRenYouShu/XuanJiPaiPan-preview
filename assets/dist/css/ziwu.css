@@ -1892,6 +1892,20 @@ body{--footer-ink:#333;--font:'Noto Sans Symbols 2','Noto Sans Symbols','Noto Em
 .wheel .w-hit:hover+.w-sel{fill:var(--wheel-arc,#666);fill-opacity:.22}
 }
 
+/* 子午流注盘：外圈经名、内圈地支、24 小时刻度与当前时刻指针 */
+.page-ziwu .wheel .w-lab-xl{font-size:16px}
+.page-ziwu .wheel .w-lab-lg{font-size:14px}
+.page-ziwu .w-hour{font-size:9px;fill:var(--wheel-ink2);text-anchor:middle;dominant-baseline:central}
+.page-ziwu .w-hour-dot{fill:var(--wheel-core);stroke:var(--wheel-line);stroke-width:.8}
+.page-ziwu .w-tick-24{stroke:var(--wheel-line);stroke-width:1}
+.page-ziwu .w-tick-24m{stroke:var(--wheel-ink2)}
+.page-ziwu .w-hand-hour{stroke:var(--wheel-ink);stroke-width:3;stroke-linecap:round}
+.page-ziwu .w-hand-min{stroke:var(--wheel-cur);stroke-width:1.5;stroke-linecap:round}
+.page-ziwu .w-pin{fill:var(--wheel-deep)}
+.page-ziwu .jl-wheel-tabs{justify-content:center}
+.page-ziwu .jl-wheel-now{margin-bottom:var(--sp-1);font-size:12px;line-height:1.6;color:var(--jl-ink2);text-align:center}
+.page-ziwu .jl-wheel-legend{margin-bottom:var(--sp-2);font-size:12px;line-height:1.6;color:var(--jl-ink2);text-align:center}
+
 /* ===== 页头：卷首式 ===== */
 .page-ziwu .page h1{color:var(--jl-deep);font-family:var(--jl-serif);font-size:23px;letter-spacing:.3em;text-indent:.3em;text-align:center;line-height:1.3}
 .page-ziwu .page h1::before{content:'';display:block;width:88px;height:1px;background:var(--jl-line);margin:0 auto var(--sp-3)}
