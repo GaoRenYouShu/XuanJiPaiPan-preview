@@ -90,7 +90,7 @@ html .page-ziwu .jl-strip > .jl-strip-cell:first-child{padding-top:var(--sp-2)}
 .page-ziwu .jl-strip-cell.on b{color:var(--jl)}
 
 /* ===== 查询行 ===== */
-.page-ziwu .form-row{gap:var(--sp-3);align-items:flex-end}
+.page-ziwu .form-row{align-items:flex-end}
 .page-ziwu .field label{color:var(--jl2);font-weight:400}
 .page-ziwu .field input,.page-ziwu .field select{border-color:var(--jl-line);background:var(--card);color:var(--jl-deep)}
 .page-ziwu .field input:focus,.page-ziwu .field select:focus{border-color:var(--jl);outline:none}
