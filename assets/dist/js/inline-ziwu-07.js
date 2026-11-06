@@ -104,7 +104,7 @@
     var list = shiling();
     if (!list[i]) return;
     var t = $('jlTime');
-    if (t) t.value = String(list[i].range).slice(0, 5);
+    if (t) { t.value = String(list[i].range).slice(0, 5); t.setAttribute('data-user-set', '1'); }
     renderAt(i);
   };
 
