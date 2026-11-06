@@ -17,8 +17,6 @@
   function xingOf(m) { if (m.xingFull) return m.xingFull; var s = shilingOfShichen(m.shichen); return s ? s.xingFull : ''; }
   function zzBrief(p) { return p && p.zz ? p.zz : '未载'; }
 
-  var JING_WX = { '胆经':'木', '肝经':'木', '心经':'火', '小肠经':'火', '心包经':'火', '三焦经':'火', '胃经':'土', '脾经':'土', '肺经':'金', '大肠经':'金', '膀胱经':'水', '肾经':'水' };
-  var WX_COLOR = { '木':'#5a8f45', '火':'#b8543f', '土':'#876248', '金':'#a8813a', '水':'#3f6d96' };
   var QI_STATUS = {
     子:'气血初生，胆气主令', 丑:'肝血归藏，解毒修复', 寅:'肺朝百脉，气血重新分布', 卯:'大肠传导，排浊外出',
     辰:'胃气最旺，受纳运化', 巳:'脾气升清，脑力体力最盛', 午:'心气主令，血脉神明', 未:'小肠泌别清浊',
@@ -301,7 +299,7 @@
     var ml = document.getElementById('jlWheelMin');
     if (ml) { ml.setAttribute('x2', WHEEL.n(mq[0])); ml.setAttribute('y2', WHEEL.n(mq[1])); }
   }
-  function updateWheelNow() {
+  function updateWheelHands() {
     var now = new Date();
     clockHands(now.getHours(), now.getMinutes());
   }
@@ -347,9 +345,9 @@
     var svg = host.querySelector('svg.wheel');
     if (svg) svg.insertAdjacentHTML('beforeend', '<line id="jlWheelHour" class="w-hand-hour" x1="220" y1="220" x2="220" y2="166"/><line id="jlWheelMin" class="w-hand-min" x1="220" y1="220" x2="220" y2="150"/><circle class="w-pin" cx="220" cy="220" r="4"/>');
     renderWheelDetail(ci);
-    updateWheelNow();
+    updateWheelHands();
     if (WHEEL_TIMER) clearInterval(WHEEL_TIMER);
-    WHEEL_TIMER = setInterval(updateWheelNow, 30000);
+    WHEEL_TIMER = setInterval(updateWheelHands, 30000);
   }
 
   function renderWheelDetail(i) {
@@ -418,13 +416,13 @@
     if (!Z || !Z.najia || !gz) return '';
     var N = Z.najia, L = Z.linggui || {};
     var dayGan = gz.day.charAt(0), hourZhi = gz.time.charAt(1);
-    var Q = N.calendarCells || N.cells;
+    var Q = N.calendarCells;
     var cell = null;
     for (var i = 0; i < Q.length; i++) {
       if (Q[i].day === dayGan && Q[i].hour === hourZhi) { cell = Q[i]; break; }
     }
     var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
-    var extra = cell && cell.note ? (/同取([^；。]+)/.exec(cell.note) || [])[1] : '';
+    var extra = cell && cell.same ? cell.same : '';
     var np = cell && cell.type === '开穴' ? pointOf(cell.point) : null;
     var nature = '';
     if (np && np.spec) for (var si = 0; si < np.spec.length; si++) if (/^五输穴/.test(np.spec[si])) nature = np.spec[si].replace('五输穴', '');
