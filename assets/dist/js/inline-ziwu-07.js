@@ -290,7 +290,7 @@
   }
 
   /* ---------- 十二时辰经络盘 ---------- */
-  var WHEEL_SEL = 0, WHEEL_MODE = 'jing', WHEEL_TIMER = null;
+  var WHEEL_SEL = 0, WHEEL_TIMER = null;
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function clockHands(h, mi) {
     if (!window.WHEEL) return;
@@ -302,11 +302,8 @@
     if (ml) { ml.setAttribute('x2', WHEEL.n(mq[0])); ml.setAttribute('y2', WHEEL.n(mq[1])); }
   }
   function updateWheelNow() {
-    var now = new Date(), h = now.getHours(), mi = now.getMinutes();
-    var list = shiling(), j = list[zhiIndex(h)];
-    var el = $('jlWheelNow');
-    if (el && j) el.textContent = '现在 ' + pad2(h) + ':' + pad2(mi) + '，' + j.zhi + '时 ' + j.jing + '当令';
-    clockHands(h, mi);
+    var now = new Date();
+    clockHands(now.getHours(), now.getMinutes());
   }
   function renderWheel() {
     var host = $('jlWheelHost');
@@ -328,7 +325,7 @@
       rings: [{ r: 182, cls: 'w-ring' }, { r: 150, cls: 'w-ring' }, { r: 120, cls: 'w-ring' }, { r: 78, cls: 'w-core' }],
       labelsOut: function (i, dg) {
         var tp = WHEEL.px(210, dg);
-        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-xl' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" transform="rotate(' + WHEEL.dir(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + esc(list[i].jing) + '</text>';
+        return '<text x="' + WHEEL.n(tp[0]) + '" y="' + WHEEL.n(tp[1]) + '" class="w-lab w-lab-xl' + (i === WHEEL_SEL ? ' w-lab-cur' : '') + '" data-i="' + i + '" transform="rotate(' + WHEEL.ring(dg) + ' ' + WHEEL.n(tp[0]) + ' ' + WHEEL.n(tp[1]) + ')">' + esc(list[i].jing) + '</text>';
       },
       labelsIn: function (i, dg) {
         var tp = WHEEL.px(136, dg);
@@ -361,32 +358,19 @@
     var list = shiling();
     if (!list[i]) return;
     var j = list[i], m = meridianByShichen(j.zhi);
+    var W = (m && window.JL.WUSHU[m.id]) ? window.JL.WUSHU[m.id] : [];
+    var shu = W.map(function (x, k) { return esc(x[0]) + '（' + WUSHU_NAMES[k] + '，' + esc(x[1]) + '）'; }).join('、') || '未载';
+    var yuan = (m && window.JL.SPECIFIC && window.JL.SPECIFIC.yuan) ? window.JL.SPECIFIC.yuan[m.id] : '';
     var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
-    if (WHEEL_MODE === 'shu') {
-      var W = (m && window.JL.WUSHU[m.id]) ? window.JL.WUSHU[m.id] : [];
-      var shu = W.map(function (x, k) { return esc(x[0]) + '（' + WUSHU_NAMES[k] + '，' + esc(x[1]) + '）'; }).join('、') || '未载';
-      var yuan = (m && window.JL.SPECIFIC && window.JL.SPECIFIC.yuan) ? window.JL.SPECIFIC.yuan[m.id] : '';
-      out.innerHTML = '<dl class="jl-kv">'
-        + row('时辰', esc(j.zhi) + '时 ' + esc(j.range))
-        + row('当令经', esc(j.full))
-        + row('五输', shu)
-        + row('原穴', yuan ? esc(yuan) : '未载')
-        + '</dl>';
-      return;
-    }
     out.innerHTML = '<dl class="jl-kv">'
       + row('时辰', esc(j.zhi) + '时 ' + esc(j.range))
       + row('当令经', esc(j.full))
       + row('五行', esc(m && m.wuxing ? m.wuxing : '不属五行'))
       + row('气血状态', esc(QI_STATUS[j.zhi] || ''))
+      + row('五输', shu)
+      + row('原穴', yuan ? esc(yuan) : '未载')
       + '</dl>';
   }
-  window.jlWheelMode = function (mode) {
-    WHEEL_MODE = mode === 'shu' ? 'shu' : 'jing';
-    var tabs = document.querySelectorAll('.jl-wheel-tabs .jl-tab');
-    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-mode') === WHEEL_MODE);
-    renderWheelDetail(WHEEL_SEL);
-  };
   window.jlPickJingluo = function (i) {
     var list = shiling();
     if (!list[i] || !window.WHEEL) return;
