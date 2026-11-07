@@ -19,6 +19,13 @@
   function sceneOf(id) { return find(A.SCENES, 'id', id); }
   function effectOf(id) { return find(A.EFFECTS, 'id', id); }
 
+  /* 人群解析：成人勾 65 以上按老人档，婴儿两档另作宜用白名单。 */
+  function resolveGroup(cond) {
+    var g = groupOf(cond.people || 'adult');
+    if (g && g.id === 'adult' && cond.age === '65+') g = groupOf('elder');
+    return g;
+  }
+
   /* 效果解析：第一效果主用三分、辅用二分，其后主用二分、辅用一分。 */
   function effectPool(effects) {
     var score = {}, order = [];
@@ -39,11 +46,15 @@
       .sort(function (a, b) { return b.score - a.score; });
   }
 
-  /* 六道过滤：库存、季节、体质、人群、风险、场景。
+  /* 六道过滤：指定、季节、体质、人群、风险、场景。
      性味只作阻断与警示，不改效果分，免把效果核心油压掉。 */
   function hardFilter(cond) {
     var pool = effectPool(cond.effects);
-    var group = groupOf(cond.people || 'adult');
+    (cond.pinned || []).forEach(function (n) {
+      var has = pool.some(function (p) { return p.name === n; });
+      if (!has && oilOf(n)) pool.push({ name: n, score: 0 });
+    });
+    var group = resolveGroup(cond);
     var risks = (cond.risks || []).map(riskOf).filter(Boolean);
     var season = seasonOf(cond.season || 'spring');
     var constit = constitOf(cond.thermal || 'unknown');
@@ -51,6 +62,14 @@
     var stock = cond.stock && cond.stock.oils && cond.stock.oils.length ? cond.stock.oils : null;
     var banned = {};
     function ban(name, reason) { if (!banned[name]) banned[name] = reason; }
+    /* 安全标签按人群消费：婴幼儿与孕期哺乳按 safety 标签剔，其余按 avoidOils 清单剔。 */
+    var useTags = group && ['infant_0_3m', 'infant_3_24m', 'toddler', 'pregnant', 'lactation'].indexOf(group.id) >= 0;
+    var tagBan = {};
+    if (useTags) {
+      (group.avoidTags || []).forEach(function (t) { if (t !== '全部') tagBan[t] = '人群：' + group.name; });
+      risks.forEach(function (r) { (r.avoidTags || []).forEach(function (t) { tagBan[t] = '风险：' + r.name; }); });
+    }
+    var whitelist = group && ['infant_0_3m', 'infant_3_24m'].indexOf(group.id) >= 0 && group.safeOils && group.safeOils.length ? group.safeOils : null;
     if (group) {
       (group.avoidOils || []).forEach(function (n) { ban(n, '人群：' + group.name); });
       if (group.avoidTags && group.avoidTags.indexOf('全部') >= 0) {
@@ -64,8 +83,14 @@
     if (constit) (constit.block || []).forEach(function (n) { ban(n, '体质：' + constit.name); });
     var usable = [], excluded = [];
     pool.forEach(function (p) {
-      if (stock && stock.indexOf(p.name) < 0) { excluded.push({ name: p.name, reason: '不在库存' }); return; }
+      if (stock && stock.indexOf(p.name) < 0) { excluded.push({ name: p.name, reason: '不在指定' }); return; }
       if (banned[p.name]) { excluded.push({ name: p.name, reason: banned[p.name] }); return; }
+      if (whitelist && whitelist.indexOf(p.name) < 0) { excluded.push({ name: p.name, reason: '人群宜用清单外：' + group.name }); return; }
+      var o = oilOf(p.name);
+      if (o && Object.keys(tagBan).length) {
+        var hit = (o.safety || []).filter(function (t) { return tagBan[t]; })[0];
+        if (hit) { excluded.push({ name: p.name, reason: tagBan[hit] }); return; }
+      }
       usable.push({ name: p.name, score: p.score });
     });
     return { usable: usable, excluded: excluded, group: group, risks: risks, season: season, constit: constit, scene: scene, stock: stock };
@@ -89,7 +114,7 @@
       if (aux) aux.role = '辅调';
     }
     if (count >= 3) {
-      var fix = take(function (o) { return o.layer === '后'; }) || take(function () { return true; });
+      var fix = take(function (o) { return o.layer === '后'; });
       if (fix) fix.role = '定香';
     }
     while (picked.length < Math.min(count, usable.length)) {
@@ -100,7 +125,7 @@
     return picked;
   }
 
-  /* 比例：按味数骨架，单味上限压回，余量补定香。 */
+  /* 比例：按种数骨架，单方上限压回，余量补定香。 */
   function brewPct(picks, count) {
     var brew = A.RULES.brew[Math.min(count, 10)];
     var cap = A.RULES.cap[Math.min(count, 10)] || 100;
@@ -115,20 +140,23 @@
     return pct;
   }
 
-  /* 基础油：按用法取默认组合，按种数分配骨架，库存内取。 */
+  /* 基础油：指定者优先全用，未指定按用法取默认组合，按种数分配骨架。 */
   function pickBases(cond) {
     var method = cond.method || 'roller';
     var want = cond.baseCount || 2;
-    var stock = cond.stock && cond.stock.bases && cond.stock.bases.length ? cond.stock.bases : null;
+    var spec = cond.stock && cond.stock.bases && cond.stock.bases.length ? cond.stock.bases : null;
     if (method === 'diffuse') return [];
     var pref;
     if (method === 'roller') pref = ['分馏椰子', '荷荷巴', '甜杏仁'];
     else if (method === 'face') pref = ['荷荷巴', '葡萄籽', '玫瑰果'];
     else if (method === 'massage') pref = ['甜杏仁', '荷荷巴', '小麦胚芽'];
     else pref = ['分馏椰子', '荷荷巴', '甜杏仁'];
-    if (stock) pref = pref.filter(function (n) { return stock.indexOf(n) >= 0; });
-    if (!pref.length) pref = stock ? stock.slice(0, want) : ['荷荷巴', '甜杏仁', '小麦胚芽'];
-    var take = pref.slice(0, Math.max(1, Math.min(want, 3)));
+    var take;
+    if (spec) {
+      take = spec.slice(0, 3);
+    } else {
+      take = pref.slice(0, Math.max(1, Math.min(want, 3)));
+    }
     var pct = A.RULES.base[take.length] || [100];
     var vol = cond.volume || 30, left = vol, ml = [];
     take.forEach(function (n, i) {
@@ -139,26 +167,43 @@
     return take.map(function (n, i) { return { name: n, pct: pct[i], ml: ml[i] }; });
   }
 
+  /* 用法档：face 面部、roller 局部、massage 身体、diffuse 扩香。 */
+  var METHOD_CONC = { face: 'face', roller: 'local', massage: 'body', diffuse: 'diffuse' };
+
   /* 浓度取人群、风险、用法档三者最小；滴数按容量与占比分配，差额补定香。 */
   function calcDrops(cond, picks, pct) {
-    var group = groupOf(cond.people || 'adult');
+    var group = resolveGroup(cond);
     var risks = (cond.risks || []).map(riskOf).filter(Boolean);
     var method = cond.method || 'roller';
-    var conc = method === 'diffuse' ? 0 : (cond.conc || 2);
+    var arch = A.RULES.conc[METHOD_CONC[method]] || 2;
+    var conc = method === 'diffuse' ? 0 : (cond.conc || arch);
     var cap = group ? group.cap : 3;
+    if (method !== 'diffuse' && arch < cap) cap = arch;
     risks.forEach(function (r) { if (r.cap && r.cap < cap) cap = r.cap; });
+    /* 单方上限反推总浓度：高酚与光敏类上限极低，按占比折回总浓度，免单方超限。 */
+    picks.forEach(function (p, i) {
+      var o = oilOf(p.name);
+      if (o && pct[i] > 0) cap = Math.min(cap, o.concMax / (pct[i] / 100));
+    });
     var used = Math.min(conc, cap);
     var vol = cond.volume || 30;
-    var total = Math.round(vol * A.RULES.dropsPerMl * used / 100);
-    var drops = pct.map(function (p) { return Math.round(total * p / 100); });
+    var per = A.RULES.dropsPerMl;
+    var n = picks.length;
+    var total = Math.round(vol * per * used / 100);
+    var lifted = false;
+    if (total < n) { total = n; lifted = true; }
+    var extra = total - n;
+    var drops = pct.map(function (p) { return 1 + Math.round(extra * p / 100); });
     var sum = drops.reduce(function (a, b) { return a + b; }, 0);
-    if (sum !== total && drops.length) {
-      var fixIdx = -1;
-      picks.forEach(function (p, i) { if (p.role === '定香') fixIdx = i; });
-      if (fixIdx < 0) fixIdx = drops.length - 1;
-      drops[fixIdx] += total - sum;
+    var guard = 0;
+    while (sum !== total && guard++ < 200) {
+      var maxI = 0;
+      drops.forEach(function (d, i) { if (d > drops[maxI]) maxI = i; });
+      if (sum > total) { if (drops[maxI] > 1) { drops[maxI]--; sum--; } else break; }
+      else { drops[maxI]++; sum++; }
     }
-    return { drops: drops, conc: used, total: total, cap: cap };
+    var real = vol * per > 0 ? total / (vol * per) * 100 : 0;
+    return { drops: drops, conc: Math.round(real * 100) / 100, total: total, cap: cap, lifted: lifted };
   }
 
   /* 六项硬标准。 */
@@ -166,9 +211,14 @@
     var out = [];
     out.push({ name: '六道合规', pass: !plan.conflicts || plan.conflicts.length === 0, note: plan.conflicts && plan.conflicts.length ? plan.conflicts.join('；') : '通过' });
     out.push({ name: '浓度上限', pass: plan.total.conc <= plan.cap + 0.001, note: plan.total.conc + '%，上限 ' + plan.cap + '%' });
-    var cap = A.RULES.cap[plan.parts.length] || 100;
+    var overConc = plan.parts.filter(function (p) {
+      var o = oilOf(p.oil);
+      return o && (plan.total.conc * p.pct / 100) > o.concMax + 0.001;
+    });
+    out.push({ name: '单方实际浓度', pass: overConc.length === 0, note: overConc.length ? overConc.map(function (p) { return p.oil + ' 上限 ' + oilOf(p.oil).concMax + '%'; }).join('、') : '通过' });
+    var cap = A.RULES.cap[(plan.cond && plan.cond.count) || plan.parts.length] || 100;
     var over = plan.parts.filter(function (p) { return p.pct > cap; });
-    out.push({ name: '单味上限', pass: over.length === 0, note: over.length ? over.map(function (p) { return p.oil + ' ' + p.pct + '%'; }).join('、') : '通过' });
+    out.push({ name: '单方上限', pass: over.length === 0, note: over.length ? over.map(function (p) { return p.oil + ' ' + p.pct + '%'; }).join('、') : '通过' });
     if (plan.parts.length >= 4) {
       var layers = {};
       plan.parts.forEach(function (p) { layers[p.layer] = true; });
@@ -214,6 +264,13 @@
     if (plan.parts.length >= 3 && plan.checks && plan.checks[3] && !plan.checks[3].pass) {
       out.push('调位不全：' + plan.checks[3].note);
     }
+    var want = (plan.cond && plan.cond.count) || 0;
+    if (want && plan.parts.length < want) {
+      out.push('滴数不足以分配 ' + want + ' 味，实际成方 ' + plan.parts.length + ' 味；建议加大容量或减味数');
+    }
+    if (plan.total && plan.total.lifted) {
+      out.push('容量偏小，已按每味至少一滴成方，浓度 ' + plan.total.conc + '%，嫌高可加大容量');
+    }
     return out;
   }
 
@@ -233,7 +290,7 @@
       cond: cond,
       parts: partsOf(picks, pct, dr.drops),
       bases: pickBases(cond),
-      total: { drops: dr.total, conc: dr.conc, ml: cond.volume || 30 },
+      total: { drops: dr.total, conc: dr.conc, ml: cond.volume || 30, lifted: dr.lifted },
       cap: dr.cap,
       conflicts: []
     };
@@ -261,7 +318,7 @@
       usable.forEach(function (u, i) { if (u.name === o.name) at = i; });
       if (at >= 0) usable.unshift(usable.splice(at, 1)[0]);
       else {
-        var reason = '不在库存';
+        var reason = '已被人群、风险、季节或体质排除';
         f.excluded.forEach(function (x) { if (x.name === o.name) reason = x.reason; });
         conflicts.push(o.name + '：' + reason);
       }
@@ -274,7 +331,7 @@
       cond: cond,
       parts: partsOf(picks, pct, dr.drops),
       bases: pickBases(cond),
-      total: { drops: dr.total, conc: dr.conc, ml: cond.volume || 30 },
+      total: { drops: dr.total, conc: dr.conc, ml: cond.volume || 30, lifted: dr.lifted },
       cap: dr.cap,
       conflicts: conflicts,
       excluded: f.excluded,
