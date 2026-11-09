@@ -47,7 +47,7 @@ Eight categories with 39 independent tools: Calendars, Fate Analysis, Three Styl
 | **Divination** | Liu Yao, Plum Blossom Numerology, Xiao Liu Ren, Fortune Sticks, Tarot, Lenormand |
 | **Folk Practices** | Folk Divination, Character Divination, Duke of Zhou Dream Interpretation, Twenty-Eight Mansions, Tai Sui and Zodiac, Sacrificial Offerings |
 | **Yunqi** | Five Movements and Six Qi, Ziwu Liuzhu Meridian Clock |
-| **Wellness** | Essential Oil Aromatherapy |
+| **Wellness** | Essential Oil Aromatherapy, Dietary Therapy |
 | **Physiognomy** | Palmistry, Face Reading, Yang Dwelling Feng Shui, Yin Dwelling Feng Shui, Luopan |
 
 ## Interface Preview
